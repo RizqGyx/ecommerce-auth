@@ -4,7 +4,7 @@ import { GradientText } from "@/components/atoms/home/GradientText";
 import { Subtitle } from "@/components/atoms/home/Subtitle";
 import { CTAButtons } from "@/components/molecules/CTAButtons";
 import { FloatingIcon } from "@/components/atoms/home/FloatingIcon";
-import { Zap, Trophy } from "lucide-react";
+import { Zap, Trophy, Dumbbell } from "lucide-react";
 
 export const HeroContent = () => (
   <div className="relative z-10 text-center max-w-6xl mx-auto px-8">
@@ -18,6 +18,11 @@ export const HeroContent = () => (
       icon={Trophy}
       size={40}
       className="-top-10 -right-20 text-accent"
+    />
+    <FloatingIcon
+      icon={Dumbbell}
+      size={40}
+      className="-bottom-15 -right-20 text-destructive/90"
     />
 
     <Heading>
