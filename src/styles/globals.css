@@ -228,6 +228,10 @@
     left: 100%;
   }
 
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
   /* Gradient Text */
   .gradient-text {
     background: linear-gradient(

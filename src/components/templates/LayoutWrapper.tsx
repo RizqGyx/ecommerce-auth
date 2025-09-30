@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Header from "@/components/organisms/Header";
-import Footer from "@/components/organisms/Footer";
+import Footer from "@/components/templates/Footer";
 
 export default function LayoutWrapper({
   children,
