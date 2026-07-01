@@ -38,8 +38,11 @@ export const metadata: Metadata = {
     "Sauna",
   ],
   icons: {
-    icon: "/Icon.png",
-    shortcut: "/Icon.png",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/Icon.png", type: "image/png", sizes: "any" },
+    ],
+    shortcut: "/icon.svg",
     apple: "/Icon.png",
   },
   authors: [{ name: "S-One Gym Bukittinggi" }],
