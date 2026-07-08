@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
+import { SessionProvider } from "next-auth/react";
 import LayoutWrapper from "@/components/templates/LayoutWrapper";
+import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,8 +41,11 @@ export const metadata: Metadata = {
     "Sauna",
   ],
   icons: {
-    icon: "/Icon.png",
-    shortcut: "/Icon.png",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/Icon.png", type: "image/png", sizes: "any" },
+    ],
+    shortcut: "/icon.svg",
     apple: "/Icon.png",
   },
   authors: [{ name: "S-One Gym Bukittinggi" }],
@@ -79,7 +85,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <SessionProvider>
+          <CartProvider>
+            <AuthProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </AuthProvider>
+          </CartProvider>
+        </SessionProvider>
       </body>
     </html>
   );

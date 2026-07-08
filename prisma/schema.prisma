@@ -17,13 +17,17 @@ model User {
   image         String?
   password      String?
   role          Role            @default(USER)
-  accounts      Account[]
-  sessions      Session[]
-  products      Product[]      
-  orders        Order[]
-  reviews       Review[]
-  carts         Cart[]
-  Authenticator Authenticator[]
+  accounts             Account[]
+  sessions             Session[]
+  products             Product[]
+  orders               Order[]
+  reviews              Review[]
+  carts                Cart[]
+  Authenticator        Authenticator[]
+  gymMembership        GymMembership?
+  memberCard           MemberCard?
+  classRegistrations   ClassRegistration[]
+  blogPosts            BlogPost[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -101,14 +105,18 @@ model Authenticator {
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  description String
-  price       Int
-  stock       Int          @default(0)
-  imageUrl    String
-  categoryId  String?
-  userId      String
+  id            String      @id @default(cuid())
+  name          String
+  description   String
+  price         Int
+  originalPrice Int?
+  stock         Int          @default(0)
+  imageUrl      String?
+  rating        Float        @default(0)
+  reviewsCount  Int          @default(0)
+  badge         String?
+  categoryId    String?
+  userId        String
 
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   category   Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -219,4 +227,177 @@ model Review {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─── Gym-Specific Models ────────────────────────────────────────────────────
+
+model MembershipPlan {
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  price       Int
+  description String
+  features    Json
+  popular     Boolean         @default(false)
+  color       String?
+  borderColor String?
+  memberships GymMembership[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GymMembership {
+  id         String           @id @default(cuid())
+  userId     String           @unique
+  planId     String
+  status     MembershipStatus @default(ACTIVE)
+  startDate  DateTime
+  endDate    DateTime
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan       MembershipPlan   @relation(fields: [planId], references: [id])
+  memberCard MemberCard?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum MembershipStatus {
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+  PENDING
+}
+
+model MemberCard {
+  id           String        @id @default(cuid())
+  membershipId String        @unique
+  userId       String        @unique
+  barcodeCode  String        @unique @default(cuid())
+  membership   GymMembership @relation(fields: [membershipId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Coach {
+  id                String         @id @default(cuid())
+  name              String
+  slug              String         @unique
+  title             String
+  bio               String
+  imageUrl          String
+  specialties       String[]
+  certifications    String[]
+  experience        Int
+  instagram         String?
+  featured          Boolean        @default(false)
+  isPersonalTrainer Boolean        @default(false)
+  pricePerSession   Int?
+  achievements      String?
+  classSessions     ClassSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ClassType {
+  id          String         @id @default(cuid())
+  name        String
+  slug        String         @unique
+  description String
+  imageUrl    String?
+  duration    Int
+  level       ClassLevel     @default(ALL_LEVELS)
+  color       String?
+  colorSolid  String?
+  icon        String?
+  benefits    String[]
+  sessions    ClassSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ClassLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ALL_LEVELS
+}
+
+model ClassSession {
+  id            String              @id @default(cuid())
+  classTypeId   String
+  coachId       String
+  date          DateTime
+  startTime     String
+  endTime       String
+  capacity      Int
+  price         Int
+  room          String?
+  status        SessionStatus       @default(UPCOMING)
+  classType     ClassType           @relation(fields: [classTypeId], references: [id])
+  coach         Coach               @relation(fields: [coachId], references: [id])
+  registrations ClassRegistration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum SessionStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELED
+}
+
+model ClassRegistration {
+  id        String             @id @default(cuid())
+  userId    String
+  sessionId String
+  status    RegistrationStatus @default(REGISTERED)
+  user      User               @relation(fields: [userId], references: [id])
+  session   ClassSession       @relation(fields: [sessionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, sessionId])
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  ATTENDED
+  CANCELED
+  NO_SHOW
+}
+
+model BlogPost {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  excerpt     String
+  content     String
+  imageUrl    String?
+  authorId    String
+  authorName  String
+  readTime    Int          @default(5)
+  category    BlogCategory @default(NEWS)
+  published   Boolean      @default(false)
+  featured    Boolean      @default(false)
+  author      User         @relation(fields: [authorId], references: [id])
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BlogCategory {
+  NEWS
+  TIPS
+  NUTRITION
+  WORKOUT
+  EVENTS
 }

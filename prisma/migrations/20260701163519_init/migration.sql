@@ -7,6 +7,21 @@ CREATE TYPE "public"."OrderStatus" AS ENUM ('PENDING', 'PAID', 'SHIPPED', 'COMPL
 -- CreateEnum
 CREATE TYPE "public"."PaymentStatus" AS ENUM ('PENDING', 'SUCCESS', 'FAILED');
 
+-- CreateEnum
+CREATE TYPE "public"."MembershipStatus" AS ENUM ('ACTIVE', 'EXPIRED', 'SUSPENDED', 'PENDING');
+
+-- CreateEnum
+CREATE TYPE "public"."ClassLevel" AS ENUM ('BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ALL_LEVELS');
+
+-- CreateEnum
+CREATE TYPE "public"."SessionStatus" AS ENUM ('UPCOMING', 'ONGOING', 'COMPLETED', 'CANCELED');
+
+-- CreateEnum
+CREATE TYPE "public"."RegistrationStatus" AS ENUM ('REGISTERED', 'ATTENDED', 'CANCELED', 'NO_SHOW');
+
+-- CreateEnum
+CREATE TYPE "public"."BlogCategory" AS ENUM ('NEWS', 'TIPS', 'NUTRITION', 'WORKOUT', 'EVENTS');
+
 -- CreateTable
 CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
@@ -86,8 +101,12 @@ CREATE TABLE "public"."Product" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
+    "originalPrice" INTEGER,
     "stock" INTEGER NOT NULL DEFAULT 0,
-    "imageUrl" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "rating" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "reviewsCount" INTEGER NOT NULL DEFAULT 0,
+    "badge" TEXT,
     "categoryId" TEXT,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -180,6 +199,140 @@ CREATE TABLE "public"."Review" (
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."MembershipPlan" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "price" INTEGER NOT NULL,
+    "description" TEXT NOT NULL,
+    "features" JSONB NOT NULL,
+    "popular" BOOLEAN NOT NULL DEFAULT false,
+    "color" TEXT,
+    "borderColor" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "MembershipPlan_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."GymMembership" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "planId" TEXT NOT NULL,
+    "status" "public"."MembershipStatus" NOT NULL DEFAULT 'ACTIVE',
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "GymMembership_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."MemberCard" (
+    "id" TEXT NOT NULL,
+    "membershipId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "barcodeCode" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "MemberCard_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Coach" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "bio" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
+    "specialties" TEXT[],
+    "certifications" TEXT[],
+    "experience" INTEGER NOT NULL,
+    "instagram" TEXT,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    "isPersonalTrainer" BOOLEAN NOT NULL DEFAULT false,
+    "pricePerSession" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Coach_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."ClassType" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "duration" INTEGER NOT NULL,
+    "level" "public"."ClassLevel" NOT NULL DEFAULT 'ALL_LEVELS',
+    "color" TEXT,
+    "colorSolid" TEXT,
+    "icon" TEXT,
+    "benefits" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ClassType_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."ClassSession" (
+    "id" TEXT NOT NULL,
+    "classTypeId" TEXT NOT NULL,
+    "coachId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "startTime" TEXT NOT NULL,
+    "endTime" TEXT NOT NULL,
+    "capacity" INTEGER NOT NULL,
+    "price" INTEGER NOT NULL,
+    "room" TEXT,
+    "status" "public"."SessionStatus" NOT NULL DEFAULT 'UPCOMING',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ClassSession_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."ClassRegistration" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "sessionId" TEXT NOT NULL,
+    "status" "public"."RegistrationStatus" NOT NULL DEFAULT 'REGISTERED',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ClassRegistration_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."BlogPost" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "excerpt" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "authorId" TEXT NOT NULL,
+    "authorName" TEXT NOT NULL,
+    "readTime" INTEGER NOT NULL DEFAULT 5,
+    "category" "public"."BlogCategory" NOT NULL DEFAULT 'NEWS',
+    "published" BOOLEAN NOT NULL DEFAULT false,
+    "featured" BOOLEAN NOT NULL DEFAULT false,
+    "publishedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "BlogPost_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
@@ -212,6 +365,33 @@ CREATE UNIQUE INDEX "Category_name_key" ON "public"."Category"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Payment_orderId_key" ON "public"."Payment"("orderId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MembershipPlan_slug_key" ON "public"."MembershipPlan"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GymMembership_userId_key" ON "public"."GymMembership"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MemberCard_membershipId_key" ON "public"."MemberCard"("membershipId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MemberCard_userId_key" ON "public"."MemberCard"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MemberCard_barcodeCode_key" ON "public"."MemberCard"("barcodeCode");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Coach_slug_key" ON "public"."Coach"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ClassType_slug_key" ON "public"."ClassType"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ClassRegistration_userId_sessionId_key" ON "public"."ClassRegistration"("userId", "sessionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "BlogPost_slug_key" ON "public"."BlogPost"("slug");
 
 -- AddForeignKey
 ALTER TABLE "public"."Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -254,3 +434,30 @@ ALTER TABLE "public"."Review" ADD CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "public"."Review" ADD CONSTRAINT "Review_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."GymMembership" ADD CONSTRAINT "GymMembership_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."GymMembership" ADD CONSTRAINT "GymMembership_planId_fkey" FOREIGN KEY ("planId") REFERENCES "public"."MembershipPlan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."MemberCard" ADD CONSTRAINT "MemberCard_membershipId_fkey" FOREIGN KEY ("membershipId") REFERENCES "public"."GymMembership"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."MemberCard" ADD CONSTRAINT "MemberCard_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."ClassSession" ADD CONSTRAINT "ClassSession_classTypeId_fkey" FOREIGN KEY ("classTypeId") REFERENCES "public"."ClassType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."ClassSession" ADD CONSTRAINT "ClassSession_coachId_fkey" FOREIGN KEY ("coachId") REFERENCES "public"."Coach"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."ClassRegistration" ADD CONSTRAINT "ClassRegistration_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."ClassRegistration" ADD CONSTRAINT "ClassRegistration_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "public"."ClassSession"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."BlogPost" ADD CONSTRAINT "BlogPost_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
