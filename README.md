@@ -145,16 +145,3 @@ npm run dev
 ```
 
 Buka [http://localhost:3000](http://localhost:3000). Panel admin ada di `/admin` (login dengan akun admin di atas).
-
-## Engineering Highlights
-
-Beberapa masalah non-trivial yang ditemukan & diperbaiki selama pengembangan:
-
-- **Bug CSS di seluruh situs**: class `.glass` (dipakai hampir semua card) ternyata backgroundnya tidak pernah muncul karena CSS custom property dibungkus dua kali (`hsl(var(--x)/opacity)` padahal `--x` sudah berupa `hsl(...)` lengkap) — CSS invalid ini gagal senyap di browser. Diperbaiki dengan `color-mix()`.
-- **Layout bento grid yang rapuh**: grid dengan `col-span`/`row-span` eksplisit meninggalkan sel kosong begitu jumlah data (kelas, coach) berubah lewat admin panel. Diganti pola spotlight + grid uniform yang otomatis menyesuaikan jumlah item berapa pun.
-- **Middleware Next.js yang tidak pernah jalan**: file middleware sempat diletakkan di lokasi yang tidak dikenali Next.js (`src/lib/middleware.ts` alih-alih `src/middleware.ts`), membuat proteksi route diam-diam tidak aktif.
-- **Relasi Prisma one-to-one tanpa `@unique`**: menyebabkan `prisma generate` gagal total sebelum sempat dipakai — ditemukan & diperbaiki di awal setup database.
-
-## Lisensi
-
-Project pribadi untuk keperluan portofolio & pembelajaran.
