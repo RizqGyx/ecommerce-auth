@@ -1,6 +1,6 @@
 "use client";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const FooterButton: React.FC<ButtonProps> = ({
   className,

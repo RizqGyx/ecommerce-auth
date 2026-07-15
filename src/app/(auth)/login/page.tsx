@@ -66,7 +66,7 @@ export default function LoginPage() {
             <Link href="/" className="flex items-center gap-3">
               <Image src="/Icon.png" alt="S-One Gym" width={40} height={40} className="rounded-full" />
               <div>
-                <h1 className="text-lg font-black gradient-text">S-One Gym</h1>
+                <span className="block text-lg font-black gradient-text">S-One Gym</span>
                 <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Bukittinggi</p>
               </div>
             </Link>

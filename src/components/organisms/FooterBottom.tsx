@@ -39,7 +39,7 @@ const FooterBottom = () => (
 
     {/* Copyright */}
     <p className="text-sm text-muted-foreground">
-      © 2024 S-One Gym. All rights reserved.
+      © {new Date().getFullYear()} Muhammad Rizki. All rights reserved.
     </p>
   </div>
 );

@@ -25,13 +25,13 @@ const AuthBrandingPanel = ({ heading, subheading, features, featureIcon = "dot",
           <Image src="/Icon.png" alt="S-One Gym" width={44} height={44} className="relative rounded-full" />
         </div>
         <div>
-          <h1 className="text-xl font-black gradient-text">S-One Gym</h1>
+          <span className="block text-xl font-black gradient-text">S-One Gym</span>
           <p className="text-xs text-muted-foreground tracking-widest uppercase">Bukittinggi</p>
         </div>
       </Link>
 
       <div>
-        <h2 className="text-4xl xl:text-5xl font-black mb-4 leading-tight">{heading}</h2>
+        <h1 className="text-4xl xl:text-5xl font-black mb-4 leading-tight">{heading}</h1>
         <p className="text-muted-foreground text-lg max-w-sm">{subheading}</p>
         {extra && <div className="mt-8">{extra}</div>}
       </div>

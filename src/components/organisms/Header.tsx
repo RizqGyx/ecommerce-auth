@@ -126,7 +126,7 @@ const Header: React.FC = () => {
               />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-lg font-bold gradient-text leading-none">S-One Gym</h1>
+              <span className="block text-lg font-bold gradient-text leading-none">S-One Gym</span>
               <p className="text-[10px] text-muted-foreground tracking-widest uppercase">
                 Bukittinggi
               </p>
