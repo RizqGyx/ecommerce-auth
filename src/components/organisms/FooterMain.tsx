@@ -4,21 +4,31 @@ import Image from "next/image";
 import Link from "next/link";
 import ContactInfo from "@/components/molecules/FooterContactInfo";
 
-const footerLinks: Record<string, string[]> = {
+const footerLinks: Record<string, Array<{ label: string; href: string }>> = {
   Programs: [
-    "Personal Training",
-    "Group Classes",
-    "Virtual Training",
-    "Nutrition Coaching",
+    { label: "Personal Training", href: "/personal-trainer" },
+    { label: "Group Classes", href: "/classes" },
+    { label: "Class Schedule", href: "/schedule" },
+    { label: "Coaches", href: "/coaches" },
   ],
-  Facilities: [
-    "Cardio Zone",
-    "Strength Training",
-    "Functional Training",
-    "Recovery Center",
+  Explore: [
+    { label: "Shop", href: "/shop" },
+    { label: "News & Tips", href: "/news" },
+    { label: "About S-One", href: "/about" },
+    { label: "Membership Plans", href: "/membership" },
   ],
-  Membership: ["Basic Plan", "Pro Plan", "Elite Plan", "Corporate Plans"],
-  Support: ["Help Center", "Contact Us", "FAQ", "Member Portal"],
+  Membership: [
+    { label: "Starter Plan", href: "/membership" },
+    { label: "Premium Plan", href: "/membership" },
+    { label: "Elite Plan", href: "/membership" },
+    { label: "Join Now", href: "/register" },
+  ],
+  Account: [
+    { label: "My Dashboard", href: "/dashboard" },
+    { label: "Sign In", href: "/login" },
+    { label: "Create Account", href: "/register" },
+    { label: "Contact Us", href: "/about" },
+  ],
 };
 
 const FooterMain = () => (
@@ -46,15 +56,15 @@ const FooterMain = () => (
     {/* Links */}
     {Object.entries(footerLinks).map(([title, links]) => (
       <div key={title}>
-        <h4 className="font-bold text-lg mb-6 text-foreground">{title}</h4>
+        <h4 className="font-bold text-sm mb-5 text-foreground uppercase tracking-widest">{title}</h4>
         <ul className="space-y-3">
           {links.map((link) => (
-            <li key={link}>
+            <li key={link.label}>
               <Link
-                href="#"
+                href={link.href}
                 className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm"
               >
-                {link}
+                {link.label}
               </Link>
             </li>
           ))}

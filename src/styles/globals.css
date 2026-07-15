@@ -48,10 +48,10 @@
   --background: hsl(0 0% 4%);
   --foreground: hsl(0 0% 98%);
 
-  --card: hsl(0 0% 6%);
+  --card: hsl(0 0% 10%);
   --card-foreground: hsl(0 0% 98%);
 
-  --popover: hsl(0 0% 6%);
+  --popover: hsl(0 0% 10%);
   --popover-foreground: hsl(0 0% 98%);
 
   /* Primary: Neon Blue */
@@ -59,11 +59,11 @@
   --primary-foreground: hsl(0 0% 4%);
 
   /* Secondary: Dark surface */
-  --secondary: hsl(0 0% 8%);
+  --secondary: hsl(0 0% 11%);
   --secondary-foreground: hsl(0 0% 98%);
 
   /* Muted: Subtle grays */
-  --muted: hsl(0 0% 12%);
+  --muted: hsl(0 0% 14%);
   --muted-foreground: hsl(0 0% 65%);
 
   /* Accent: Futuristic Purple */
@@ -73,8 +73,8 @@
   --destructive: hsl(0 84% 60%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  --border: hsl(0 0% 15%);
-  --input: hsl(0 0% 12%);
+  --border: hsl(0 0% 22%);
+  --input: hsl(0 0% 14%);
   --ring: hsl(195 100% 50%);
 
   --radius: 0.75rem;
@@ -83,7 +83,7 @@
   --neon-blue: hsl(195 100% 50%);
   --neon-purple: hsl(264 76% 53%);
   --dark-surface: hsl(0 0% 6%);
-  --glass-surface: hsl(0 0% 8%);
+  --glass-surface: hsl(0 0% 12%);
 
   /* Gradients */
   --gradient-primary: linear-gradient(
@@ -168,12 +168,49 @@
   }
 }
 
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @layer utilities {
+  /* Visible divider between stacked sections on every page */
+  main section + section {
+    border-top: 1px solid hsl(0 0% 100% / 0.1);
+    box-shadow: 0 1px 0 hsl(195 100% 50% / 0.08);
+  }
+
+  .animate-marquee {
+    animation: marquee-scroll 40s linear infinite;
+  }
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+  .animate-float {
+    animation: float-y 4s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: float-y 6s ease-in-out infinite;
+  }
+  .animate-count-up {
+    animation: count-up 0.6s ease-out forwards;
+  }
+
   /* Glass Effect */
   .glass {
-    background: hsl(var(--glass-surface) / 0.8);
+    background: color-mix(in srgb, var(--glass-surface) 90%, transparent);
     backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--border) / 0.3);
+    border: 1px solid hsl(0 0% 100% / 0.12);
     box-shadow: var(--shadow-glass);
   }
 
@@ -204,7 +241,7 @@
     position: relative;
     overflow: hidden;
     background: var(--gradient-primary);
-    border: 1px solid hsl(var(--primary) / 0.5);
+    border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
     transition: var(--transition-smooth);
   }
 
@@ -218,7 +255,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      hsl(var(--primary) / 0.4),
+      color-mix(in srgb, var(--primary) 40%, transparent),
       transparent
     );
     transition: left 0.6s;
