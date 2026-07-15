@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import Header from "@/components/organisms/Header";
 import Footer from "@/components/templates/Footer";
+import FloatingCartButton from "@/components/molecules/FloatingCartButton";
+import CartToast from "@/components/molecules/CartToast";
 
 export default function LayoutWrapper({
   children,
@@ -10,13 +12,16 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideLayout = pathname === "/login" || pathname === "/register";
+  const hideLayout =
+    pathname === "/login" || pathname === "/register" || pathname.startsWith("/admin");
 
   return (
     <>
       {!hideLayout && <Header />}
       <main>{children}</main>
       {!hideLayout && <Footer />}
+      {!hideLayout && <FloatingCartButton />}
+      {!hideLayout && <CartToast />}
     </>
   );
 }

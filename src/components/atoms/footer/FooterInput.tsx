@@ -1,6 +1,6 @@
 "use client";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const FooterInput: React.FC<InputProps> = ({ className, ...props }) => {
   return (
