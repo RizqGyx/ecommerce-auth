@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Package, ChevronRight, Clock, CheckCircle, Truck, XCircle } from "lucide-react";
 import { MOCK_ORDERS } from "@/lib/data";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 const STATUS_CONFIG = {
   PROCESSING: { label: "Diproses", color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20", icon: Clock },
   SHIPPING: { label: "Dikirim", color: "text-blue-400 bg-blue-400/10 border-blue-400/20", icon: Truck },

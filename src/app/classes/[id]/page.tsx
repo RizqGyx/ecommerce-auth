@@ -1,8 +1,10 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Clock, ChevronRight, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
+import { buildMetadata } from "@/lib/seo";
 
 const LEVEL_LABELS: Record<string, string> = {
   ALL_LEVELS: "All Levels",
@@ -18,13 +20,31 @@ const LEVEL_COLOR: Record<string, string> = {
   ADVANCED: "text-red-400 border-red-400/30 bg-red-400/10",
 };
 
+const getClassType = cache((id: string) => prisma.classType.findUnique({ where: { id } }));
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const cls = await getClassType(id);
+  if (!cls) return buildMetadata({ title: "Kelas Tidak Ditemukan", description: "Kelas yang kamu cari tidak tersedia.", path: `/classes/${id}` });
+
+  return buildMetadata({
+    title: cls.name,
+    description: cls.description,
+    path: `/classes/${id}`,
+  });
+}
+
 export default async function ClassDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const cls = await prisma.classType.findUnique({ where: { id } });
+  const cls = await getClassType(id);
 
   if (!cls) notFound();
 

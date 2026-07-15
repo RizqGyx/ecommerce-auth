@@ -9,6 +9,8 @@ import { STATUS_CONFIG } from "@/components/molecules/TransactionCard";
 import TrackingTimeline from "@/components/molecules/TrackingTimeline";
 import RetryButton from "./RetryButton";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function TransactionDetailPage({
   params,
 }: {

@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import LayoutWrapper from "@/components/templates/LayoutWrapper";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { SITE_URL, SITE_NAME, organizationJsonLd } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,28 +18,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "S-One Gym Bukittinggi | Gym & Pusat Kebugaran Fisik",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "S-One Gym Bukittinggi | Gym & Pusat Kebugaran Fisik",
+    template: `%s | ${SITE_NAME}`,
+  },
   description:
     "S-One Gym Bukittinggi - Gym futuristik dengan desain neon, fasilitas modern, dan program latihan profesional untuk mencapai tubuh ideal Anda.",
   keywords: [
     "S-One Gym Bukittinggi",
-    "s.onegym",
     "gym Bukittinggi",
     "fitness Bukittinggi",
-    "futuristic gym",
-    "More than a Gym",
-    "It's Your Space",
-    "neon gym",
-    "personal training",
-    "cardio",
-    "strength training",
-    "Fitness",
-    "Aerobic",
-    "Zumba",
-    "Poundfit",
-    "Muaythai",
-    "Calisthenics",
-    "Sauna",
+    "personal training Bukittinggi",
+    "kelas Zumba Bukittinggi",
+    "membership gym Bukittinggi",
   ],
   icons: {
     icon: [
@@ -49,12 +42,14 @@ export const metadata: Metadata = {
     apple: "/Icon.png",
   },
   authors: [{ name: "S-One Gym Bukittinggi" }],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/" },
   openGraph: {
     title: "S-One Gym Bukittinggi | Gym & Pusat Kebugaran Fisik",
     description:
       "Rasakan pengalaman fitness futuristik di S-One Gym Bukittinggi — fasilitas modern, desain neon, dan pelatih profesional.",
-    url: "https://s-onegym.vercel.app",
-    siteName: "S-One Gym Bukittinggi",
+    url: SITE_URL,
+    siteName: SITE_NAME,
     images: [
       {
         url: "/Hero.png",
@@ -81,7 +76,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="id">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

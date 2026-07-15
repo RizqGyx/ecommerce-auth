@@ -1,10 +1,32 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, User, Tag, ArrowRight, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import { toBlogPostData } from "@/lib/serializers";
+import { buildMetadata, SITE_URL } from "@/lib/seo";
 import BlogPostCard, { CATEGORY_EMOJI, CATEGORY_STYLES } from "@/components/molecules/BlogPostCard";
+
+const getPost = cache((slug: string) => prisma.blogPost.findUnique({ where: { slug } }));
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  if (!post || !post.published) {
+    return buildMetadata({ title: "Artikel Tidak Ditemukan", description: "Artikel yang kamu cari tidak tersedia.", path: `/news/${slug}` });
+  }
+
+  return buildMetadata({
+    title: post.title,
+    description: post.excerpt,
+    path: `/news/${slug}`,
+  });
+}
 
 export default async function NewsDetailPage({
   params,
@@ -12,9 +34,26 @@ export default async function NewsDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const postRow = await prisma.blogPost.findUnique({ where: { slug } });
+  const postRow = await getPost(slug);
   if (!postRow || !postRow.published) notFound();
   const post = toBlogPostData(postRow);
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    image: `${SITE_URL}/Hero.png`,
+    datePublished: postRow.publishedAt?.toISOString() ?? postRow.createdAt.toISOString(),
+    dateModified: postRow.updatedAt.toISOString(),
+    author: { "@type": "Person", name: post.author },
+    publisher: {
+      "@type": "Organization",
+      name: "S-One Gym Bukittinggi",
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/Icon.png` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/news/${slug}` },
+  };
 
   const allPosts = await prisma.blogPost.findMany({ where: { published: true } });
   const related = allPosts
@@ -45,6 +84,10 @@ export default async function NewsDetailPage({
 
   return (
     <div className="min-h-screen pt-20 pb-24 bg-[#0a0a0a]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       {/* ── ARTICLE HERO ───────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden py-20">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/8 via-accent/4 to-transparent" />

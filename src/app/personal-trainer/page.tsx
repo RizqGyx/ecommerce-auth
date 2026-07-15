@@ -17,6 +17,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "Personal Training",
+  description:
+    "Latihan 1-on-1 dengan personal trainer bersertifikat di S-One Gym Bukittinggi. Program custom sesuai tujuanmu — dari fat loss sampai muscle gain.",
+  path: "/personal-trainer",
+});
 
 const PT_BENEFITS = [
   {

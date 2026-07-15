@@ -1,8 +1,28 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Award, Instagram, Star, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
+import { buildMetadata } from "@/lib/seo";
+
+const getCoach = cache((id: string) => prisma.coach.findUnique({ where: { id } }));
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const coach = await getCoach(id);
+  if (!coach) return buildMetadata({ title: "Coach Tidak Ditemukan", description: "Coach yang kamu cari tidak tersedia.", path: `/coaches/${id}` });
+
+  return buildMetadata({
+    title: `${coach.name} — ${coach.title}`,
+    description: coach.bio,
+    path: `/coaches/${id}`,
+  });
+}
 
 const PT_PACKAGES = [
   {
@@ -38,7 +58,7 @@ export default async function CoachDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const coach = await prisma.coach.findUnique({ where: { id } });
+  const coach = await getCoach(id);
 
   if (!coach) notFound();
 

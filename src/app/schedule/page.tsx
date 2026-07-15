@@ -1,6 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { toScheduleSession } from "@/lib/serializers";
+import { buildMetadata } from "@/lib/seo";
 import SchedulePageClient from "./SchedulePageClient";
+
+export const metadata = buildMetadata({
+  title: "Jadwal Kelas Mingguan",
+  description:
+    "Lihat jadwal kelas mingguan S-One Gym Bukittinggi dan booking langsung — Zumba, Muay Thai, Calisthenics, Poundfit, dan Yoga setiap hari.",
+  path: "/schedule",
+});
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const WEEKDAY_INDEX: Record<string, number> = {

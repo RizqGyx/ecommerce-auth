@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import TrackingTimeline from "@/components/molecules/TrackingTimeline";
 import { MOCK_ORDERS } from "@/lib/data";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 const STATUS_LABEL: Record<string, string> = {
   PROCESSING: "Sedang Diproses",
   SHIPPING: "Dalam Pengiriman",

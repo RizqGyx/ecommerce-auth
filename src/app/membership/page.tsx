@@ -4,8 +4,16 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { toPricingCardData } from "@/lib/serializers";
+import { buildMetadata } from "@/lib/seo";
 import FAQAccordion from "./FAQAccordion";
 import { subscribeToPlan } from "./actions";
+
+export const metadata = buildMetadata({
+  title: "Paket Membership & Harga",
+  description:
+    "Pilih paket membership S-One Gym Bukittinggi — Starter, Premium, atau Elite. Tanpa kontrak jangka panjang, bisa dibatalkan kapan saja.",
+  path: "/membership",
+});
 
 const COMPARISON_FEATURES = [
   { label: "Gym Floor Access", starter: "6AM–10PM", premium: "24/7", elite: "24/7" },

@@ -11,6 +11,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { STATS } from "@/lib/data";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "Tentang Kami",
+  description:
+    "Kenali S-One Gym Bukittinggi lebih dekat — visi misi, fasilitas, dan cerita di balik gym futuristik pertama di Bukittinggi.",
+  path: "/about",
+});
 
 /* ─────────────────────────── Local data ─────────────────────────── */
 

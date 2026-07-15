@@ -65,7 +65,7 @@ export default function RegisterPage() {
           <div className="lg:hidden flex justify-center mb-8">
             <Link href="/" className="flex items-center gap-3">
               <Image src="/Icon.png" alt="S-One Gym" width={40} height={40} className="rounded-full" />
-              <h1 className="text-lg font-black gradient-text">S-One Gym</h1>
+              <span className="text-lg font-black gradient-text">S-One Gym</span>
             </Link>
           </div>
 
