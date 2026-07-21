@@ -15,6 +15,7 @@ model User {
   email         String          @unique
   emailVerified DateTime?
   image         String?
+  phone         String?
   password      String?
   role          Role            @default(USER)
   accounts             Account[]
@@ -28,9 +29,26 @@ model User {
   memberCard           MemberCard?
   classRegistrations   ClassRegistration[]
   blogPosts            BlogPost[]
+  otps                 Otp[]
+  ptBookings           PTBooking[]
+  notifications        Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Otp {
+  id         String    @id @default(cuid())
+  userId     String
+  code       String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  attempts   Int       @default(0)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 enum Role {
@@ -215,18 +233,67 @@ enum PaymentStatus {
   FAILED
 }
 
-model Review {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String
-  rating    Int      @default(5)
-  comment   String?
+enum ReviewTargetType {
+  PRODUCT
+  CLASS_SESSION
+  PT_BOOKING
+}
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+model Review {
+  id             String           @id @default(cuid())
+  userId         String
+  targetType     ReviewTargetType
+  productId      String?
+  classSessionId String?
+  ptBookingId    String?
+  rating         Int              @default(5)
+  comment        String?
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product      Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  classSession ClassSession? @relation(fields: [classSessionId], references: [id], onDelete: Cascade)
+  ptBooking    PTBooking?    @relation(fields: [ptBookingId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@unique([userId, classSessionId])
+  @@unique([userId, ptBookingId])
+  @@index([productId])
+  @@index([classSessionId])
+  @@index([ptBookingId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  read      Boolean          @default(false)
+  starred   Boolean          @default(false)
+  sourceId  String?
+  actionUrl String?
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type, sourceId])
+  @@index([userId, createdAt])
+  @@index([userId, read])
+}
+
+// PROMO exists for UI/icon parity with the notifications page's type filters,
+// but no write path in this codebase ever produces one — broadcast-to-all-users
+// notifications ("new slot available", promos) are out of scope.
+enum NotificationType {
+  BOOKING
+  PAYMENT
+  PT
+  PROMO
+  SYSTEM
 }
 
 // ─── Gym-Specific Models ────────────────────────────────────────────────────
@@ -274,8 +341,8 @@ model MemberCard {
   membershipId String        @unique
   userId       String        @unique
   barcodeCode  String        @unique @default(cuid())
-  membership   GymMembership @relation(fields: [membershipId], references: [id])
-  user         User          @relation(fields: [userId], references: [id])
+  membership   GymMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -297,9 +364,35 @@ model Coach {
   pricePerSession   Int?
   achievements      String?
   classSessions     ClassSession[]
+  ptBookings        PTBooking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PTBooking {
+  id            String          @id @default(cuid())
+  userId        String
+  coachId       String
+  packageName   String
+  sessionsTotal Int
+  sessionsUsed  Int             @default(0)
+  price         Int
+  startDate     DateTime
+  endDate       DateTime
+  status        PTBookingStatus @default(ACTIVE)
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coach         Coach           @relation(fields: [coachId], references: [id])
+  reviews       Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PTBookingStatus {
+  ACTIVE
+  COMPLETED
+  CANCELED
 }
 
 model ClassType {
@@ -341,6 +434,7 @@ model ClassSession {
   classType     ClassType           @relation(fields: [classTypeId], references: [id])
   coach         Coach               @relation(fields: [coachId], references: [id])
   registrations ClassRegistration[]
+  reviews       Review[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -358,7 +452,7 @@ model ClassRegistration {
   userId    String
   sessionId String
   status    RegistrationStatus @default(REGISTERED)
-  user      User               @relation(fields: [userId], references: [id])
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   session   ClassSession       @relation(fields: [sessionId], references: [id])
 
   createdAt DateTime @default(now())
