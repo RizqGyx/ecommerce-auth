@@ -7,6 +7,8 @@ interface AuthUser {
   name: string;
   email: string;
   plan: string | null;
+  role: "USER" | "ADMIN";
+  isVerified: boolean;
 }
 
 interface AuthContextValue {
@@ -30,7 +32,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isLoggedIn: !!session?.user,
     isLoading: status === "loading",
     user: session?.user
-      ? { name: session.user.name ?? "", email: session.user.email ?? "", plan: session.user.plan }
+      ? {
+          name: session.user.name ?? "",
+          email: session.user.email ?? "",
+          plan: session.user.plan,
+          role: session.user.role,
+          isVerified: session.user.isVerified,
+        }
       : null,
     logout: () => signOut({ callbackUrl: "/" }),
   };
