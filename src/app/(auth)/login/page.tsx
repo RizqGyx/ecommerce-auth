@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { Eye, EyeOff, Zap, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AuthBrandingPanel from "@/components/organisms/AuthBrandingPanel";
@@ -25,13 +25,15 @@ const SOCIAL_PROOF = (
   </div>
 );
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +42,14 @@ export default function LoginPage() {
 
     const res = await signIn("credentials", { email, password, redirect: false });
 
-    setIsLoading(false);
     if (res?.error) {
+      setIsLoading(false);
       setError("Email atau password salah.");
       return;
     }
-    router.push("/dashboard");
+
+    const session = await getSession();
+    router.push(callbackUrl ?? (session?.user?.role === "ADMIN" ? "/admin" : "/dashboard"));
     router.refresh();
   };
 
@@ -127,7 +131,7 @@ export default function LoginPage() {
               <div className="flex-1 h-px bg-border/30" />
             </div>
 
-            <GoogleButton label="Continue with Google" />
+            <GoogleButton label="Continue with Google" callbackUrl={callbackUrl ?? "/dashboard"} />
           </form>
 
           <p className="mt-8 text-center text-xs text-muted-foreground">
@@ -138,5 +142,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-muted-foreground">Memuat...</div></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

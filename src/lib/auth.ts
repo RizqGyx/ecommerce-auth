@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { compare } from "bcrypt-ts";
 import { prisma } from "@/lib/prisma";
@@ -10,6 +11,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
@@ -32,16 +37,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id as string;
-        token.role = user.role as "USER" | "ADMIN";
+    async jwt({ token, user, trigger }) {
+      if (user) token.id = user.id as string;
 
-        const membership = await prisma.gymMembership.findUnique({
-          where: { userId: user.id as string },
-          include: { plan: true },
+      if (user || trigger === "update") {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          include: { gymMembership: { include: { plan: true } } },
         });
-        token.plan = membership?.plan.name ?? null;
+        token.role = dbUser?.role ?? "USER";
+        token.isVerified = !!dbUser?.emailVerified;
+        token.plan = dbUser?.gymMembership?.plan.name ?? null;
       }
       return token;
     },

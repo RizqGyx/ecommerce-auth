@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 export const authConfig = {
   pages: { signIn: "/login" },
+  trustHost: true,
   providers: [],
   callbacks: {
     session({ session, token }) {
@@ -10,6 +11,7 @@ export const authConfig = {
         session.user.id = token.id as string;
         session.user.role = token.role as "USER" | "ADMIN";
         session.user.plan = token.plan as string | null;
+        session.user.isVerified = token.isVerified as boolean;
       }
       return session;
     },
@@ -26,6 +28,17 @@ export const authConfig = {
 
       if (pathname.startsWith("/dashboard") || pathname.startsWith("/settings")) {
         return isLoggedIn;
+      }
+
+      const VERIFIED_REQUIRED_PATHS = ["/checkout", "/booking", "/personal-trainer/book"];
+      if (VERIFIED_REQUIRED_PATHS.some((p) => pathname.startsWith(p))) {
+        if (!isLoggedIn) {
+          return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(pathname)}`, nextUrl));
+        }
+        if (!auth?.user?.isVerified) {
+          return NextResponse.redirect(new URL(`/verify-email?callbackUrl=${encodeURIComponent(pathname)}`, nextUrl));
+        }
+        return true;
       }
 
       return true;
