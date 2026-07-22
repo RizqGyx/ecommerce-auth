@@ -8,113 +8,45 @@ import {
   Calendar, CreditCard, Dumbbell, Tag, Info, Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { NotificationType } from "@/generated/prisma";
+import type { NotificationView } from "@/lib/serializers";
+import {
+  getNotifications, markNotificationRead, markNotificationUnread,
+  markAllNotificationsRead, toggleNotificationStar, deleteNotification, deleteNotifications,
+} from "./actions";
 
-type NotifType = "booking" | "payment" | "pt" | "promo" | "system";
-
-interface Notification {
-  id: string;
-  type: NotifType;
-  title: string;
-  body: string;
-  time: string;
-  read: boolean;
-  starred: boolean;
-}
-
-const ICON_MAP: Record<NotifType, React.ElementType> = {
-  booking: Calendar,
-  payment: CreditCard,
-  pt: Dumbbell,
-  promo: Tag,
-  system: Info,
+const ICON_MAP: Record<NotificationType, React.ElementType> = {
+  BOOKING: Calendar,
+  PAYMENT: CreditCard,
+  PT: Dumbbell,
+  PROMO: Tag,
+  SYSTEM: Info,
 };
 
-const COLOR_MAP: Record<NotifType, string> = {
-  booking: "text-primary bg-primary/10 border-primary/20",
-  payment: "text-green-400 bg-green-400/10 border-green-400/20",
-  pt: "text-accent bg-accent/10 border-accent/20",
-  promo: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
-  system: "text-muted-foreground bg-muted/40 border-border/20",
+const COLOR_MAP: Record<NotificationType, string> = {
+  BOOKING: "text-primary bg-primary/10 border-primary/20",
+  PAYMENT: "text-green-400 bg-green-400/10 border-green-400/20",
+  PT: "text-accent bg-accent/10 border-accent/20",
+  PROMO: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+  SYSTEM: "text-muted-foreground bg-muted/40 border-border/20",
 };
-
-const INITIAL: Notification[] = [
-  {
-    id: "1",
-    type: "booking",
-    title: "Booking Dikonfirmasi",
-    body: "Kelas Zumba bersama Rina Sari pada Senin, 30 Jun 2025 pukul 08:00 di Studio B telah dikonfirmasi.",
-    time: "2 jam lalu",
-    read: false,
-    starred: false,
-  },
-  {
-    id: "2",
-    type: "payment",
-    title: "Pembayaran Berhasil",
-    body: "Pembayaran paket Transform Personal Training senilai Rp 1.300.000 melalui GoPay telah berhasil. Ref: PT-20250629.",
-    time: "5 jam lalu",
-    read: false,
-    starred: true,
-  },
-  {
-    id: "3",
-    type: "pt",
-    title: "Sesi PT Besok",
-    body: "Ingatkan: Sesi Personal Training bersama Ahmad Rizky dijadwalkan besok, Kamis 3 Jul 2025 pukul 09:00 di Outdoor Area.",
-    time: "1 hari lalu",
-    read: true,
-    starred: false,
-  },
-  {
-    id: "4",
-    type: "promo",
-    title: "Promo Spesial Hari Ini!",
-    body: "Hemat 30% untuk upgrade ke paket Elite PT. Penawaran berlaku hari ini sampai pukul 23:59. Kode: ELITE30",
-    time: "2 hari lalu",
-    read: true,
-    starred: false,
-  },
-  {
-    id: "5",
-    type: "system",
-    title: "Membership Hampir Berakhir",
-    body: "Membership Premium Anda akan berakhir pada 31 Juli 2025 (31 hari lagi). Perpanjang sekarang untuk nikmati harga member.",
-    time: "3 hari lalu",
-    read: false,
-    starred: true,
-  },
-  {
-    id: "6",
-    type: "booking",
-    title: "Kelas Yoga Selesai",
-    body: "Terima kasih telah mengikuti kelas Yoga bersama Sari Dewi. Bagaimana sesinya? Beri rating untuk membantu sesama member.",
-    time: "4 hari lalu",
-    read: true,
-    starred: false,
-  },
-  {
-    id: "7",
-    type: "promo",
-    title: "Member Baru: Referral Bonus",
-    body: "Teman Anda bergabung menggunakan kode referral Anda. Anda mendapatkan kredit Rp 50.000 yang dapat dipakai untuk kelas berikutnya.",
-    time: "5 hari lalu",
-    read: true,
-    starred: false,
-  },
-];
 
 type FilterTab = "all" | "unread" | "starred";
 
 export default function NotificationsPage() {
   const router = useRouter();
   const { isLoggedIn, isLoading } = useAuth();
-  const [notifs, setNotifs] = useState<Notification[]>(INITIAL);
+  const [notifs, setNotifs] = useState<NotificationView[]>([]);
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn) router.push("/login");
   }, [isLoading, isLoggedIn, router]);
+
+  useEffect(() => {
+    if (isLoggedIn) getNotifications().then(setNotifs);
+  }, [isLoggedIn]);
 
   const filtered = notifs.filter((n) => {
     if (activeTab === "unread") return !n.read;
@@ -124,22 +56,33 @@ export default function NotificationsPage() {
 
   const unreadCount = notifs.filter((n) => !n.read).length;
 
-  const markRead = (id: string) =>
+  const markRead = (id: string) => {
     setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    markNotificationRead(id);
+  };
 
-  const markUnread = (id: string) =>
+  const markUnread = (id: string) => {
     setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, read: false } : n)));
+    markNotificationUnread(id);
+  };
 
-  const toggleStar = (id: string) =>
+  const toggleStar = (id: string) => {
     setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, starred: !n.starred } : n)));
+    toggleNotificationStar(id);
+  };
 
-  const deleteNotif = (id: string) =>
+  const deleteNotif = (id: string) => {
     setNotifs((prev) => prev.filter((n) => n.id !== id));
+    deleteNotification(id);
+  };
 
-  const markAllRead = () =>
+  const markAllRead = () => {
     setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+    markAllNotificationsRead();
+  };
 
   const deleteSelected = () => {
+    deleteNotifications(Array.from(selectedIds));
     setNotifs((prev) => prev.filter((n) => !selectedIds.has(n.id)));
     setSelectedIds(new Set());
   };
@@ -268,16 +211,18 @@ export default function NotificationsPage() {
 
                 <div className="flex gap-4 p-5">
                   {/* Checkbox */}
-                  <button
-                    onClick={() => toggleSelect(notif.id)}
-                    className={`shrink-0 w-5 h-5 rounded border transition-all duration-200 flex items-center justify-center mt-0.5 ${
-                      isSelected
-                        ? "bg-primary border-primary"
-                        : "border-border/40 hover:border-primary/50 bg-transparent"
-                    }`}
-                  >
-                    {isSelected && <Check size={12} className="text-primary-foreground" />}
-                  </button>
+                  {!notif.isVirtual && (
+                    <button
+                      onClick={() => toggleSelect(notif.id)}
+                      className={`shrink-0 w-5 h-5 rounded border transition-all duration-200 flex items-center justify-center mt-0.5 ${
+                        isSelected
+                          ? "bg-primary border-primary"
+                          : "border-border/40 hover:border-primary/50 bg-transparent"
+                      }`}
+                    >
+                      {isSelected && <Check size={12} className="text-primary-foreground" />}
+                    </button>
+                  )}
 
                   {/* Icon */}
                   <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border ${colorCls}`}>
@@ -299,38 +244,40 @@ export default function NotificationsPage() {
                   </div>
                 </div>
 
-                {/* Actions — hover reveal */}
-                <div className="flex items-center gap-1 border-t border-border/10 px-5 py-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/20">
-                  <button
-                    onClick={() => (notif.read ? markUnread(notif.id) : markRead(notif.id))}
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all"
-                  >
-                    {notif.read ? (
-                      <><Bell size={12} /> Tandai belum dibaca</>
-                    ) : (
-                      <><CheckCheck size={12} /> Tandai dibaca</>
-                    )}
-                  </button>
+                {/* Actions — hover reveal (hidden for the synthesized virtual entry) */}
+                {!notif.isVirtual && (
+                  <div className="flex items-center gap-1 border-t border-border/10 px-5 py-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-card/20">
+                    <button
+                      onClick={() => (notif.read ? markUnread(notif.id) : markRead(notif.id))}
+                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all"
+                    >
+                      {notif.read ? (
+                        <><Bell size={12} /> Tandai belum dibaca</>
+                      ) : (
+                        <><CheckCheck size={12} /> Tandai dibaca</>
+                      )}
+                    </button>
 
-                  <button
-                    onClick={() => toggleStar(notif.id)}
-                    className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all ${
-                      notif.starred ? "text-yellow-400" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Star size={12} fill={notif.starred ? "currentColor" : "none"} />
-                    {notif.starred ? "Hapus bintang" : "Bintangi"}
-                  </button>
+                    <button
+                      onClick={() => toggleStar(notif.id)}
+                      className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all ${
+                        notif.starred ? "text-yellow-400" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <Star size={12} fill={notif.starred ? "currentColor" : "none"} />
+                      {notif.starred ? "Hapus bintang" : "Bintangi"}
+                    </button>
 
-                  <div className="flex-1" />
+                    <div className="flex-1" />
 
-                  <button
-                    onClick={() => deleteNotif(notif.id)}
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive px-3 py-1.5 rounded-lg hover:bg-destructive/10 transition-all"
-                  >
-                    <Trash2 size={12} /> Hapus
-                  </button>
-                </div>
+                    <button
+                      onClick={() => deleteNotif(notif.id)}
+                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive px-3 py-1.5 rounded-lg hover:bg-destructive/10 transition-all"
+                    >
+                      <Trash2 size={12} /> Hapus
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}

@@ -5,26 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Menu, X, ShoppingCart, User, Bell,
-  LayoutDashboard, Settings, LogOut, ReceiptText,
+  LayoutDashboard, Settings, LogOut, ReceiptText, ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  time: string;
-  read: boolean;
-}
-
-const NOTIFICATIONS: Notification[] = [
-  { id: "1", title: "Booking Dikonfirmasi", message: "Kelas Zumba Senin 08:00 berhasil di-booking!", time: "2 jam lalu", read: false },
-  { id: "2", title: "Paket PT Segera Habis", message: "Paket Transform PT kamu berakhir dalam 7 hari.", time: "1 hari lalu", read: false },
-  { id: "3", title: "Slot Baru Tersedia", message: "Sesi Sauna akhir pekan sudah bisa di-booking.", time: "2 hari lalu", read: true },
-];
+import type { NotificationView } from "@/lib/serializers";
+import { getNotifications, markNotificationRead } from "@/app/notifications/actions";
 
 const NAV_ITEMS = [
   { name: "Home", href: "/" },
@@ -43,6 +31,7 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationView[]>([]);
 
   const notifRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -51,7 +40,23 @@ const Header: React.FC = () => {
   const { totalItems } = useCart();
   const { isLoggedIn, user, logout } = useAuth();
 
-  const unreadCount = NOTIFICATIONS.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    if (isLoggedIn) getNotifications().then(setNotifications);
+  }, [isLoggedIn]);
+
+  const handleOpenNotifications = () => {
+    setOpenNotifications((v) => !v);
+    setOpenUserMenu(false);
+    getNotifications().then(setNotifications);
+  };
+
+  const handleNotificationClick = (id: string) => {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    markNotificationRead(id);
+  };
+
   const userInitials = user?.name
     .split(" ")
     .map((n) => n[0])
@@ -172,7 +177,7 @@ const Header: React.FC = () => {
                 {/* Notification Bell (logged in only) */}
                 <div className="relative hidden md:block" ref={notifRef}>
                   <button
-                    onClick={() => { setOpenNotifications((v) => !v); setOpenUserMenu(false); }}
+                    onClick={handleOpenNotifications}
                     className="flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors relative"
                   >
                     <Bell size={18} />
@@ -193,23 +198,30 @@ const Header: React.FC = () => {
                           )}
                         </div>
                         <div className="divide-y divide-border/10 max-h-72 overflow-y-auto">
-                          {NOTIFICATIONS.map((n) => (
-                            <div
-                              key={n.id}
-                              className={`px-4 py-3 hover:bg-white/5 transition-colors ${!n.read ? "bg-primary/5" : ""}`}
-                            >
-                              <div className="flex items-start gap-2.5">
-                                <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${!n.read ? "bg-primary" : "bg-transparent"}`} />
-                                <div className="flex-1 min-w-0">
-                                  <p className={`text-sm font-semibold leading-tight ${n.read ? "text-muted-foreground" : ""}`}>
-                                    {n.title}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{n.message}</p>
-                                  <p className="text-[10px] text-muted-foreground/60 mt-1">{n.time}</p>
-                                </div>
-                              </div>
+                          {notifications.length === 0 ? (
+                            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                              Belum ada notifikasi.
                             </div>
-                          ))}
+                          ) : (
+                            notifications.map((n) => (
+                              <button
+                                key={n.id}
+                                onClick={() => handleNotificationClick(n.id)}
+                                className={`w-full text-left px-4 py-3 hover:bg-white/5 transition-colors ${!n.read ? "bg-primary/5" : ""}`}
+                              >
+                                <div className="flex items-start gap-2.5">
+                                  <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${!n.read ? "bg-primary" : "bg-transparent"}`} />
+                                  <div className="flex-1 min-w-0">
+                                    <p className={`text-sm font-semibold leading-tight ${n.read ? "text-muted-foreground" : ""}`}>
+                                      {n.title}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{n.body}</p>
+                                    <p className="text-[10px] text-muted-foreground/60 mt-1">{n.time}</p>
+                                  </div>
+                                </div>
+                              </button>
+                            ))
+                          )}
                         </div>
                         <div className="px-4 py-2.5 border-t border-border/20 bg-secondary/10">
                           <Link href="/notifications" className="text-xs text-primary hover:underline" onClick={() => setOpenNotifications(false)}>
@@ -246,7 +258,7 @@ const Header: React.FC = () => {
                           </div>
                           <div className="mt-2.5">
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                              {user?.plan} Member
+                              {user?.plan ? `${user.plan} Member` : "Belum Berlangganan"}
                             </span>
                           </div>
                         </div>
@@ -254,6 +266,9 @@ const Header: React.FC = () => {
                         {/* Menu links */}
                         <div className="py-1">
                           {[
+                            ...(user?.role === "ADMIN"
+                              ? [{ label: "Admin Panel", href: "/admin", icon: ShieldCheck }]
+                              : []),
                             { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
                             { label: "Transaksi", href: "/transactions", icon: ReceiptText },
                             { label: "Profil & Settings", href: "/settings", icon: Settings },
@@ -342,9 +357,28 @@ const Header: React.FC = () => {
                     </div>
                     <div className="min-w-0">
                       <p className="font-semibold text-sm truncate">{user?.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{user?.plan} Member</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user?.plan ? `${user.plan} Member` : "Belum Berlangganan"}
+                      </p>
                     </div>
                   </div>
+                  {user?.role === "ADMIN" && (
+                    <Button variant="glass" className="w-full" asChild>
+                      <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
+                        <ShieldCheck size={15} /> Admin Panel
+                      </Link>
+                    </Button>
+                  )}
+                  <Button variant="glass" className="w-full" asChild>
+                    <Link href="/notifications" onClick={() => setIsMenuOpen(false)} className="relative">
+                      <Bell size={15} /> Notifikasi
+                      {unreadCount > 0 && (
+                        <span className="absolute top-1 right-4 w-4 h-4 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </Link>
+                  </Button>
                   <Button variant="neon" className="w-full" asChild>
                     <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
                       <LayoutDashboard size={15} /> Dashboard
