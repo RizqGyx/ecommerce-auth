@@ -203,7 +203,7 @@ export default async function MembershipPage() {
                       <div className="w-full mb-8 flex items-center justify-center gap-2 py-2.5 rounded-md border border-primary/40 bg-primary/10 text-primary text-sm font-semibold">
                         <CheckCircle2 size={16} /> Paket Aktifmu
                       </div>
-                    ) : session?.user ? (
+                    ) : session?.user?.isVerified ? (
                       <form action={subscribeToPlan.bind(null, plan.id)} className="mb-8">
                         <Button
                           type="submit"
@@ -219,6 +219,22 @@ export default async function MembershipPage() {
                           <ArrowRight size={16} />
                         </Button>
                       </form>
+                    ) : session?.user ? (
+                      <Button
+                        variant={isPopular ? "hero" : isElite ? "neon" : "glass"}
+                        size="lg"
+                        className={`w-full mb-8 ${
+                          isElite
+                            ? "border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400"
+                            : ""
+                        }`}
+                        asChild
+                      >
+                        <Link href={`/verify-email?callbackUrl=${encodeURIComponent("/membership")}`}>
+                          Verifikasi Email Dulu
+                          <ArrowRight size={16} />
+                        </Link>
+                      </Button>
                     ) : (
                       <Button
                         variant={isPopular ? "hero" : isElite ? "neon" : "glass"}

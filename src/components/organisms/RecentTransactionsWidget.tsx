@@ -1,14 +1,18 @@
 import Link from "next/link";
-import { ArrowRight, ShoppingBag, Dumbbell, ReceiptText } from "lucide-react";
-import { MOCK_TRANSACTIONS } from "@/lib/data";
-import { STATUS_CONFIG } from "@/components/molecules/TransactionCard";
+import { ArrowRight, ShoppingBag, Dumbbell, User, ReceiptText } from "lucide-react";
+import type { TransactionSummary } from "@/lib/serializers";
+
+const TYPE_ICON: Record<TransactionSummary["type"], typeof ShoppingBag> = {
+  shop: ShoppingBag,
+  booking: Dumbbell,
+  pt: User,
+};
 
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
-function formatRelativeDate(iso: string) {
-  const date = new Date(iso);
+function formatRelativeDate(date: Date) {
   const diffDays = Math.floor((startOfDay(new Date()) - startOfDay(date)) / 86400000);
   if (diffDays === 0) return "Hari ini";
   if (diffDays === 1) return "Kemarin";
@@ -16,12 +20,12 @@ function formatRelativeDate(iso: string) {
   return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
 }
 
-export default function RecentTransactionsWidget() {
-  const sorted = [...MOCK_TRANSACTIONS].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  const recent = sorted.slice(0, 3);
-  const pendingCount = MOCK_TRANSACTIONS.filter((t) => t.status === "PENDING_PAYMENT").length;
+interface Props {
+  transactions: TransactionSummary[];
+}
+
+export default function RecentTransactionsWidget({ transactions }: Props) {
+  const recent = transactions.slice(0, 3);
 
   return (
     <div className="glass rounded-2xl border border-border/20 overflow-hidden">
@@ -32,9 +36,6 @@ export default function RecentTransactionsWidget() {
           </div>
           <div>
             <h3 className="font-bold leading-tight">Transaksi Terbaru</h3>
-            {pendingCount > 0 && (
-              <p className="text-[11px] text-yellow-400 font-medium">{pendingCount} menunggu pembayaran</p>
-            )}
           </div>
         </div>
         <Link
@@ -50,13 +51,11 @@ export default function RecentTransactionsWidget() {
       ) : (
         <div className="px-3 pb-3 space-y-1.5">
           {recent.map((tx) => {
-            const cfg = STATUS_CONFIG[tx.status];
-            const title = tx.type === "shop" ? (tx.items?.[0]?.name ?? "Belanja") : tx.class ?? "Booking Kelas";
-            const TypeIcon = tx.type === "shop" ? ShoppingBag : Dumbbell;
+            const TypeIcon = TYPE_ICON[tx.type];
 
             return (
               <Link
-                key={tx.id}
+                key={`${tx.type}-${tx.id}`}
                 href={`/transactions/${tx.id}`}
                 className="group flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-colors"
               >
@@ -73,16 +72,13 @@ export default function RecentTransactionsWidget() {
                   <TypeIcon size={16} className={tx.type === "shop" ? "text-accent" : "text-primary"} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate">{title}</p>
+                  <p className="text-sm font-semibold truncate">{tx.title}</p>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <span>Rp {tx.total.toLocaleString("id-ID")}</span>
                     <span>·</span>
                     <span>{formatRelativeDate(tx.createdAt)}</span>
                   </div>
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${cfg.color}`}>
-                  {cfg.label}
-                </span>
               </Link>
             );
           })}
