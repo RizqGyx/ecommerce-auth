@@ -12,21 +12,30 @@ interface QRISPaymentProps {
   orderId: string;
   successUrl: string;
   onClearCart?: () => void;
+  onConfirm?: () => Promise<string | void>;
 }
 
-const QRISPayment = ({ total, orderId, successUrl, onClearCart }: QRISPaymentProps) => {
+const QRISPayment = ({ total, orderId, successUrl, onClearCart, onConfirm }: QRISPaymentProps) => {
   const router = useRouter();
   const [checking, setChecking] = useState(false);
   const [expired, setExpired] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   const qrValue = `S1GPAY:${orderId}:${total}:QRIS`;
 
   const handleCheck = async () => {
     setChecking(true);
-    await new Promise((r) => setTimeout(r, 2200));
-    onClearCart?.();
-    router.push(successUrl);
+    setError(null);
+    try {
+      await new Promise((r) => setTimeout(r, 2200));
+      const redirectUrl = await onConfirm?.();
+      onClearCart?.();
+      router.push(redirectUrl || successUrl);
+    } catch (err) {
+      setChecking(false);
+      setError(err instanceof Error ? err.message : "Gagal memproses pembayaran.");
+    }
   };
 
   const handleRefresh = () => {
@@ -114,6 +123,12 @@ const QRISPayment = ({ total, orderId, successUrl, onClearCart }: QRISPaymentPro
           ))}
         </ol>
       </div>
+
+      {error && (
+        <div className="w-full px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-sm text-red-400">
+          {error}
+        </div>
+      )}
 
       <Button
         variant="hero"

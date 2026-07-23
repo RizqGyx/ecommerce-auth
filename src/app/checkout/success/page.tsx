@@ -1,19 +1,36 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { CheckCircle, Package, ArrowRight, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Suspense } from "react";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import ProductReviewPrompt from "@/components/organisms/ProductReviewPrompt";
 
-function SuccessContent() {
-  const params = useSearchParams();
-  const orderId = params.get("orderId") ?? "S1G-XXXXXXX";
-  const total = Number(params.get("total") ?? 0);
-  const method = params.get("method") ?? "Pembayaran";
+export default async function CheckoutSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ orderId?: string }>;
+}) {
+  const { orderId } = await searchParams;
+  const session = await auth();
+  if (!session?.user || !orderId) notFound();
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { payment: true, items: { include: { product: true } } },
+  });
+
+  if (!order || order.userId !== session.user.id) notFound();
+
+  const existingReviews = await prisma.review.findMany({
+    where: { userId: session.user.id, productId: { in: order.items.map((i) => i.productId) } },
+  });
+  const reviewedProductIds = new Set(existingReviews.map((r) => r.productId).filter((id): id is string => id !== null));
+
+  const methodName = order.payment?.method ?? "Pembayaran";
 
   return (
-    <div className="min-h-screen pt-20 flex items-center justify-center px-6">
+    <div className="min-h-screen pt-20 flex items-center justify-center px-6 pb-16">
       <div className="max-w-md w-full text-center">
         {/* Success icon */}
         <div className="relative mb-6 inline-block">
@@ -25,7 +42,7 @@ function SuccessContent() {
 
         <h1 className="text-3xl font-black mb-2">Pesanan Berhasil! 🎉</h1>
         <p className="text-muted-foreground mb-8">
-          Pembayaran via <strong className="text-foreground">{method}</strong> telah dikonfirmasi.
+          Pembayaran via <strong className="text-foreground">{methodName}</strong> telah dikonfirmasi.
           Tim S-One Store akan segera memproses pesananmu.
         </p>
 
@@ -37,26 +54,22 @@ function SuccessContent() {
             </div>
             <div>
               <div className="font-bold">Nomor Pesanan</div>
-              <div className="font-mono text-primary text-sm">{orderId}</div>
+              <div className="font-mono text-primary text-sm">{order.id}</div>
             </div>
           </div>
 
           <div className="space-y-2 text-sm border-t border-border/20 pt-4">
             <div className="flex justify-between text-muted-foreground">
               <span>Metode Pembayaran</span>
-              <span className="text-foreground font-medium">{method}</span>
+              <span className="text-foreground font-medium">{methodName}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>Total Dibayar</span>
-              <span className="text-primary font-bold">Rp {total.toLocaleString("id-ID")}</span>
+              <span className="text-primary font-bold">Rp {order.total.toLocaleString("id-ID")}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>Status</span>
               <span className="text-green-400 font-semibold">Dikonfirmasi ✓</span>
-            </div>
-            <div className="flex justify-between text-muted-foreground">
-              <span>Estimasi Kirim</span>
-              <span className="text-foreground">3–5 hari kerja</span>
             </div>
           </div>
         </div>
@@ -74,18 +87,16 @@ function SuccessContent() {
           </Button>
         </div>
 
+        <ProductReviewPrompt
+          orderId={order.id}
+          items={order.items.map((i) => ({ productId: i.productId, name: i.product.name }))}
+          reviewedProductIds={Array.from(reviewedProductIds)}
+        />
+
         <p className="text-xs text-muted-foreground mt-6">
           Invoice dikirim ke email terdaftar. Cek spam jika tidak muncul dalam 5 menit.
         </p>
       </div>
     </div>
-  );
-}
-
-export default function CheckoutSuccessPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen pt-20 flex items-center justify-center"><div className="text-muted-foreground">Memuat...</div></div>}>
-      <SuccessContent />
-    </Suspense>
   );
 }

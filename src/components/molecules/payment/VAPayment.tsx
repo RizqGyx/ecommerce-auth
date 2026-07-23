@@ -79,9 +79,10 @@ interface VAPaymentProps {
   orderId: string;
   successUrl: string;
   onClearCart?: () => void;
+  onConfirm?: () => Promise<string | void>;
 }
 
-const VAPayment = ({ methodId, methodName, total, orderId, successUrl, onClearCart }: VAPaymentProps) => {
+const VAPayment = ({ methodId, methodName, total, orderId, successUrl, onClearCart, onConfirm }: VAPaymentProps) => {
   const router = useRouter();
   const meta = BANK_META[methodId] ?? BANK_META["bca-va"];
 
@@ -92,6 +93,7 @@ const VAPayment = ({ methodId, methodName, total, orderId, successUrl, onClearCa
   const [copied, setCopied] = useState(false);
   const [tab, setTab] = useState<"atm" | "mobile" | "internet">("mobile");
   const [checking, setChecking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const copyVA = () => {
     navigator.clipboard.writeText(vaNumber);
@@ -101,9 +103,16 @@ const VAPayment = ({ methodId, methodName, total, orderId, successUrl, onClearCa
 
   const handleConfirm = async () => {
     setChecking(true);
-    await new Promise((r) => setTimeout(r, 2200));
-    onClearCart?.();
-    router.push(successUrl);
+    setError(null);
+    try {
+      await new Promise((r) => setTimeout(r, 2200));
+      const redirectUrl = await onConfirm?.();
+      onClearCart?.();
+      router.push(redirectUrl || successUrl);
+    } catch (err) {
+      setChecking(false);
+      setError(err instanceof Error ? err.message : "Gagal memproses pembayaran.");
+    }
   };
 
   const stepsAtm = ATM_STEPS[methodId] ?? ATM_STEPS["bca-va"];
@@ -185,6 +194,12 @@ const VAPayment = ({ methodId, methodName, total, orderId, successUrl, onClearCa
           </ol>
         </div>
       </div>
+
+      {error && (
+        <div className="px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-sm text-red-400">
+          {error}
+        </div>
+      )}
 
       <Button
         variant="hero"

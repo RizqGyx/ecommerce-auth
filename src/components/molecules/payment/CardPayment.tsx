@@ -10,6 +10,7 @@ interface CardPaymentProps {
   total: number;
   successUrl: string;
   onClearCart?: () => void;
+  onConfirm?: () => Promise<string | void>;
 }
 
 type CardType = "visa" | "mastercard" | "amex" | "unknown";
@@ -39,7 +40,7 @@ function formatExpiry(val: string) {
   return digits;
 }
 
-const CardPayment = ({ total, successUrl, onClearCart }: CardPaymentProps) => {
+const CardPayment = ({ total, successUrl, onClearCart, onConfirm }: CardPaymentProps) => {
   const router = useRouter();
   const [flipped, setFlipped] = useState(false);
   const [cardNum, setCardNum] = useState("");
@@ -49,6 +50,7 @@ const CardPayment = ({ total, successUrl, onClearCart }: CardPaymentProps) => {
   const [showCvv, setShowCvv] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [step3d, setStep3d] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const cardType = detectCardType(cardNum);
   const meta = CARD_TYPE_META[cardType];
@@ -65,12 +67,19 @@ const CardPayment = ({ total, successUrl, onClearCart }: CardPaymentProps) => {
 
   const handlePay = async () => {
     setProcessing(true);
+    setError(null);
     await new Promise((r) => setTimeout(r, 1500));
     setProcessing(false);
     setStep3d(true);
     await new Promise((r) => setTimeout(r, 2000));
-    onClearCart?.();
-    router.push(successUrl);
+    try {
+      const redirectUrl = await onConfirm?.();
+      onClearCart?.();
+      router.push(redirectUrl || successUrl);
+    } catch (err) {
+      setStep3d(false);
+      setError(err instanceof Error ? err.message : "Gagal memproses pembayaran.");
+    }
   };
 
   if (step3d) {
@@ -225,6 +234,12 @@ const CardPayment = ({ total, successUrl, onClearCart }: CardPaymentProps) => {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-sm text-red-400">
+          {error}
+        </div>
+      )}
 
       <Button
         variant="hero"
