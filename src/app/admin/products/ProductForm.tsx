@@ -54,16 +54,11 @@ export default function ProductForm({ action, categories, product }: ProductForm
         </Select>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="rating">Rating (0-5)</Label>
-          <Input id="rating" name="rating" type="number" min={0} max={5} step={0.1} defaultValue={product?.rating ?? 0} required />
-        </div>
-        <div>
-          <Label htmlFor="reviewsCount">Jumlah Review</Label>
-          <Input id="reviewsCount" name="reviewsCount" type="number" min={0} defaultValue={product?.reviewsCount ?? 0} required />
-        </div>
-      </div>
+      {product && (
+        <p className="text-sm text-muted-foreground">
+          Rating: {product.rating.toFixed(1)} ⭐ ({product.reviewsCount} ulasan) — dihitung otomatis dari ulasan pelanggan.
+        </p>
+      )}
 
       <div>
         <Label htmlFor="badge">Badge (opsional)</Label>
