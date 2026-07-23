@@ -520,31 +520,52 @@ export const STATS = [
   { value: "5+", label: "Years of Excellence", icon: "⭐" },
 ];
 
-export const TESTIMONIALS = [
+// ─── E-Commerce / Checkout ────────────────────────────────────────────────────
+
+export const PT_PACKAGES = [
   {
-    id: "1",
-    name: "Fitri Handayani",
-    role: "Premium Member, 1 Year",
-    content: "S-One Gym changed my life. The Zumba classes with Rina are the highlight of my week — I've lost 12kg and gained so much confidence. The staff treats you like family.",
-    rating: 5,
+    id: "starter",
+    name: "Starter",
+    sessions: 4,
+    price: 700000,
+    validDays: 30,
+    features: [
+      "4 × 60-min PT sessions",
+      "Initial fitness assessment",
+      "Basic nutrition guidelines",
+      "Custom workout plan",
+    ],
   },
   {
-    id: "2",
-    name: "Eko Baskoro",
-    role: "Elite Member, 2 Years",
-    content: "Training Muay Thai with Budi is intense but incredibly rewarding. The facilities are world-class and the atmosphere pushes you to be better every single session.",
-    rating: 5,
+    id: "transform",
+    name: "Transform",
+    sessions: 8,
+    price: 1300000,
+    validDays: 30,
+    popular: true,
+    features: [
+      "8 × 60-min PT sessions",
+      "Full fitness assessment",
+      "Personalized nutrition plan",
+      "Custom workout program",
+      "WhatsApp support",
+    ],
   },
   {
-    id: "3",
-    name: "Maya Anggraini",
-    role: "Premium Member, 8 Months",
-    content: "I started with yoga, then tried calisthenics. Ahmad's coaching completely transformed how I see fitness. This is not just a gym — it's a community.",
-    rating: 5,
+    id: "elite",
+    name: "Elite",
+    sessions: 16,
+    price: 2400000,
+    validDays: 60,
+    features: [
+      "16 × 60-min PT sessions",
+      "Complete body composition analysis",
+      "Advanced nutrition coaching",
+      "Periodized 8-week program",
+      "Daily WhatsApp support",
+    ],
   },
 ];
-
-// ─── E-Commerce / Checkout ────────────────────────────────────────────────────
 
 export const COURIERS = [
   { id: "jne-reg", name: "JNE Reguler", estimasi: "3–5 hari kerja", cost: 15000 },
@@ -565,285 +586,3 @@ export const PROVINCES = [
   "Maluku", "Maluku Utara", "Papua Barat", "Papua",
 ];
 
-interface TrackingStep {
-  status: string;
-  desc: string;
-  time: string;
-  done: boolean;
-}
-
-interface OrderItem {
-  name: string;
-  qty: number;
-  price: number;
-  category: string;
-}
-
-export interface MockOrder {
-  id: string;
-  date: string;
-  status: "PROCESSING" | "SHIPPING" | "DELIVERED" | "CANCELLED";
-  items: OrderItem[];
-  address: {
-    recipient: string;
-    phone: string;
-    street: string;
-    city: string;
-    province: string;
-    postal: string;
-  };
-  courier: { name: string; cost: number; tracking: string };
-  payment: { method: string; total: number };
-  tracking: TrackingStep[];
-}
-
-// ─── Unified Transaction types ───────────────────────────────────────────────
-
-export type TransactionStatus =
-  | "PENDING_PAYMENT"
-  | "PAYMENT_EXPIRED"
-  | "PAID"
-  | "IN_PROGRESS"
-  | "COMPLETED"
-  | "CANCELLED";
-
-export type TransactionType = "shop" | "booking";
-
-export interface TxItem {
-  name: string;
-  qty?: number;
-  price: number;
-  emoji?: string;
-}
-
-export interface TxTrackingStep {
-  label: string;
-  desc: string;
-  time?: string;
-  done: boolean;
-  active?: boolean;
-}
-
-export interface MockTransaction {
-  id: string;
-  type: TransactionType;
-  status: TransactionStatus;
-  createdAt: string;
-  paymentDeadline?: string;
-  paymentMethod?: string;
-  paymentCategory?: string;
-  paymentMethodId?: string;
-  total: number;
-  // shop
-  items?: TxItem[];
-  address?: string;
-  courier?: string;
-  trackingSteps?: TxTrackingStep[];
-  // booking
-  class?: string;
-  day?: string;
-  date?: string;
-  time?: string;
-  coach?: string;
-  location?: string;
-}
-
-export const MOCK_TRANSACTIONS: MockTransaction[] = [
-  {
-    id: "TXN-001",
-    type: "shop",
-    status: "PENDING_PAYMENT",
-    createdAt: "2026-07-01T08:00:00",
-    paymentDeadline: "2026-07-02T08:00:00",
-    paymentMethod: "Virtual Account BCA",
-    paymentCategory: "bank",
-    paymentMethodId: "bca-va",
-    total: 285000,
-    items: [
-      { name: "Whey Protein Vanilla 1kg", qty: 1, price: 250000, emoji: "🥛" },
-      { name: "Shaker Bottle 600ml", qty: 1, price: 35000, emoji: "🧴" },
-    ],
-    address: "Jl. Veteran No. 15, Bukittinggi, Sumatera Barat",
-    courier: "JNE Reguler",
-  },
-  {
-    id: "TXN-002",
-    type: "booking",
-    status: "PENDING_PAYMENT",
-    createdAt: "2026-07-01T08:45:00",
-    paymentDeadline: "2026-07-01T09:45:00",
-    paymentMethod: "GoPay",
-    paymentCategory: "ewallet",
-    paymentMethodId: "gopay",
-    total: 75000,
-    class: "Zumba",
-    day: "Monday",
-    date: "7 Jul 2026",
-    time: "09:00 – 10:00",
-    coach: "Sarah Fitria",
-    location: "Studio A, Lantai 2",
-  },
-  {
-    id: "TXN-003",
-    type: "shop",
-    status: "PAYMENT_EXPIRED",
-    createdAt: "2026-06-29T15:00:00",
-    paymentDeadline: "2026-06-30T15:00:00",
-    paymentMethod: "Virtual Account Mandiri",
-    paymentCategory: "bank",
-    paymentMethodId: "mandiri-va",
-    total: 120000,
-    items: [
-      { name: "Resistance Band Set (5 level)", qty: 1, price: 120000, emoji: "🏋️" },
-    ],
-    address: "Jl. Veteran No. 15, Bukittinggi, Sumatera Barat",
-    courier: "J&T Express",
-  },
-  {
-    id: "TXN-004",
-    type: "booking",
-    status: "PAYMENT_EXPIRED",
-    createdAt: "2026-06-30T11:00:00",
-    paymentDeadline: "2026-06-30T12:00:00",
-    paymentMethod: "QRIS",
-    paymentCategory: "qris",
-    paymentMethodId: "qris",
-    total: 85000,
-    class: "HIIT",
-    day: "Tuesday",
-    date: "1 Jul 2026",
-    time: "07:00 – 08:00",
-    coach: "Mike Rendra",
-    location: "Studio Utama",
-  },
-  {
-    id: "TXN-005",
-    type: "shop",
-    status: "IN_PROGRESS",
-    createdAt: "2026-06-28T10:00:00",
-    paymentMethod: "OVO",
-    total: 195000,
-    items: [
-      { name: "Gym Gloves Pro", qty: 1, price: 95000, emoji: "🧤" },
-      { name: "Foam Roller 30cm", qty: 1, price: 100000, emoji: "🔵" },
-    ],
-    address: "Jl. Veteran No. 15, Bukittinggi, Sumatera Barat",
-    courier: "SiCepat Reguler",
-    trackingSteps: [
-      { label: "Pembayaran Diterima", desc: "Pembayaran OVO dikonfirmasi", time: "28 Jun, 10:30", done: true },
-      { label: "Pesanan Dikemas", desc: "S-One Store mempersiapkan paketmu", time: "28 Jun, 14:00", done: true },
-      { label: "Paket Dikirim", desc: "Paket diserahkan ke SiCepat", time: "29 Jun, 09:00", done: true },
-      { label: "Tiba di Kota Tujuan", desc: "Paket dalam perjalanan ke Bukittinggi", time: "Estimasi 1 Jul", done: false, active: true },
-      { label: "Terkirim", desc: "Menunggu konfirmasi penerimaan", time: "Estimasi 2 Jul", done: false },
-    ],
-  },
-  {
-    id: "TXN-006",
-    type: "booking",
-    status: "PAID",
-    createdAt: "2026-06-30T20:00:00",
-    paymentMethod: "DANA",
-    total: 95000,
-    class: "Yoga Flow",
-    day: "Wednesday",
-    date: "8 Jul 2026",
-    time: "08:00 – 09:30",
-    coach: "Dewi Kusuma",
-    location: "Studio B, Lantai 1",
-  },
-  {
-    id: "TXN-007",
-    type: "shop",
-    status: "COMPLETED",
-    createdAt: "2026-06-25T09:00:00",
-    paymentMethod: "Virtual Account BRI",
-    total: 350000,
-    items: [
-      { name: "S-One Gym Performance Tee", qty: 2, price: 175000, emoji: "👕" },
-    ],
-    address: "Jl. Veteran No. 15, Bukittinggi, Sumatera Barat",
-    courier: "JNE YES",
-    trackingSteps: [
-      { label: "Pembayaran Diterima", desc: "BRI VA dikonfirmasi sistem", time: "25 Jun, 09:15", done: true },
-      { label: "Pesanan Dikemas", desc: "S-One Store mempersiapkan paketmu", time: "25 Jun, 13:00", done: true },
-      { label: "Paket Dikirim", desc: "Paket diserahkan ke JNE YES", time: "26 Jun, 08:00", done: true },
-      { label: "Tiba di Kota Tujuan", desc: "Paket tiba di Bukittinggi", time: "27 Jun, 11:00", done: true },
-      { label: "Terkirim", desc: "Diterima oleh Ahmad Berzki", time: "27 Jun, 15:30", done: true },
-    ],
-  },
-  {
-    id: "TXN-008",
-    type: "booking",
-    status: "COMPLETED",
-    createdAt: "2026-06-23T19:00:00",
-    paymentMethod: "DANA",
-    total: 75000,
-    class: "Pilates",
-    day: "Friday",
-    date: "27 Jun 2026",
-    time: "10:00 – 11:00",
-    coach: "Lia Amira",
-    location: "Studio B, Lantai 1",
-  },
-];
-
-// ─── Legacy mock orders (kept for /orders/[orderId] detail page) ──────────────
-
-export const MOCK_ORDERS: MockOrder[] = [
-  {
-    id: "S1G-ABC123",
-    date: "2025-06-28",
-    status: "DELIVERED",
-    items: [
-      { name: "Whey Protein Gold Standard", qty: 1, price: 450000, category: "Supplements" },
-      { name: "S-One Water Bottle 750ml", qty: 2, price: 95000, category: "Merchandise" },
-    ],
-    address: { recipient: "Ahmad Berzki", phone: "+62 812-3456-7890", street: "Jl. Veteran No. 15", city: "Bukittinggi", province: "Sumatera Barat", postal: "26112" },
-    courier: { name: "JNE Reguler", cost: 15000, tracking: "JNE00123456789ID" },
-    payment: { method: "GoPay", total: 655000 },
-    tracking: [
-      { status: "Pembayaran Diterima", desc: "Pembayaran dikonfirmasi oleh sistem", time: "28 Jun, 10:15", done: true },
-      { status: "Pesanan Dikemas", desc: "S-One Store sedang mempersiapkan paketmu", time: "28 Jun, 14:30", done: true },
-      { status: "Paket Dikirim", desc: "Paket telah diserahkan ke JNE", time: "29 Jun, 09:00", done: true },
-      { status: "Tiba di Kota Tujuan", desc: "Paket tiba di Bukittinggi", time: "30 Jun, 08:30", done: true },
-      { status: "Terkirim", desc: "Paket diterima oleh Ahmad Berzki", time: "30 Jun, 14:20", done: true },
-    ],
-  },
-  {
-    id: "S1G-DEF456",
-    date: "2025-06-25",
-    status: "SHIPPING",
-    items: [
-      { name: "BCAA Recovery Boost", qty: 2, price: 185000, category: "Supplements" },
-      { name: "S-One Gym Performance Tee", qty: 1, price: 180000, category: "Merchandise" },
-    ],
-    address: { recipient: "Ahmad Berzki", phone: "+62 812-3456-7890", street: "Jl. Veteran No. 15", city: "Bukittinggi", province: "Sumatera Barat", postal: "26112" },
-    courier: { name: "J&T Express", cost: 12000, tracking: "JT00123456789" },
-    payment: { method: "Virtual Account BCA", total: 562000 },
-    tracking: [
-      { status: "Pembayaran Diterima", desc: "Pembayaran dikonfirmasi oleh sistem", time: "25 Jun, 16:00", done: true },
-      { status: "Pesanan Dikemas", desc: "S-One Store sedang mempersiapkan paketmu", time: "25 Jun, 18:00", done: true },
-      { status: "Paket Dikirim", desc: "Paket telah diserahkan ke J&T", time: "26 Jun, 10:00", done: true },
-      { status: "Tiba di Kota Tujuan", desc: "Paket dalam perjalanan ke kota tujuan", time: "Estimasi 30 Jun", done: false },
-      { status: "Terkirim", desc: "Menunggu konfirmasi penerimaan", time: "Estimasi 1 Jul", done: false },
-    ],
-  },
-  {
-    id: "S1G-GHI789",
-    date: "2025-06-20",
-    status: "PROCESSING",
-    items: [
-      { name: "MMA Training Gloves", qty: 1, price: 245000, category: "Equipment" },
-    ],
-    address: { recipient: "Ahmad Berzki", phone: "+62 812-3456-7890", street: "Jl. Veteran No. 15", city: "Bukittinggi", province: "Sumatera Barat", postal: "26112" },
-    courier: { name: "SiCepat Reguler", cost: 13000, tracking: "-" },
-    payment: { method: "QRIS", total: 258000 },
-    tracking: [
-      { status: "Pembayaran Diterima", desc: "Pembayaran dikonfirmasi oleh sistem", time: "20 Jun, 09:45", done: true },
-      { status: "Pesanan Dikemas", desc: "Penjual sedang mempersiapkan pesananmu", time: "Dalam proses", done: false },
-      { status: "Paket Dikirim", desc: "Menunggu pickup kurir", time: "Estimasi 21 Jun", done: false },
-      { status: "Tiba di Kota Tujuan", desc: "", time: "Estimasi 22 Jun", done: false },
-      { status: "Terkirim", desc: "", time: "Estimasi 23 Jun", done: false },
-    ],
-  },
-];

@@ -20,8 +20,6 @@ const productSchema = z.object({
   price: z.coerce.number().int().min(0),
   originalPrice: z.coerce.number().int().min(0).optional().or(z.literal("")),
   imageUrl: z.string().optional().or(z.literal("")),
-  rating: z.coerce.number().min(0).max(5),
-  reviewsCount: z.coerce.number().int().min(0),
   badge: z.string().optional().or(z.literal("")),
   categoryId: z.string().min(1),
 });
@@ -33,8 +31,6 @@ function parseProductForm(formData: FormData) {
     price: formData.get("price"),
     originalPrice: formData.get("originalPrice") ?? "",
     imageUrl: formData.get("imageUrl") ?? "",
-    rating: formData.get("rating"),
-    reviewsCount: formData.get("reviewsCount"),
     badge: formData.get("badge") ?? "",
     categoryId: formData.get("categoryId"),
   });
@@ -45,8 +41,6 @@ function parseProductForm(formData: FormData) {
     price: parsed.price,
     originalPrice: parsed.originalPrice === "" ? null : Number(parsed.originalPrice),
     imageUrl: parsed.imageUrl === "" ? null : parsed.imageUrl,
-    rating: parsed.rating,
-    reviewsCount: parsed.reviewsCount,
     badge: parsed.badge === "" ? null : parsed.badge,
     categoryId: parsed.categoryId,
   };

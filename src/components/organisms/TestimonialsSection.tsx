@@ -1,32 +1,30 @@
 import { Star, Quote } from "lucide-react";
-import { TESTIMONIALS } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
+import { toTestimonial, deriveRoleLabel } from "@/lib/serializers";
 
-const EXTENDED = [
-  ...TESTIMONIALS,
-  {
-    id: "4",
-    name: "Rizal Firmansyah",
-    role: "Starter Member, 3 Months",
-    content: "Baru 3 bulan tapi sudah lihat hasil yang nyata. Kelas Calisthenics Ahmad benar-benar beda — terstruktur, progresif, dan menyenangkan.",
-    rating: 5,
-  },
-  {
-    id: "5",
-    name: "Dewi Kusuma",
-    role: "Premium Member, 6 Months",
-    content: "Yoga dengan Sari Dewi adalah pengalaman yang luar biasa. Saya datang karena stres kerja, sekarang saya tidur lebih nyenyak dan lebih fokus setiap hari.",
-    rating: 5,
-  },
-  {
-    id: "6",
-    name: "Hendra Wijaya",
-    role: "Elite Member, 18 Months",
-    content: "Muay Thai di sini bukan hanya olahraga, tapi self-defense yang sesungguhnya. Coach Budi tahu cara memotivasi dan tekniknya sangat solid.",
-    rating: 5,
-  },
-];
+const TestimonialsSection = async () => {
+  const reviews = await prisma.review.findMany({
+    where: { rating: { gte: 4 }, comment: { not: null } },
+    include: {
+      user: true,
+      product: true,
+      classSession: { include: { classType: true } },
+      ptBooking: { include: { coach: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 12,
+  });
 
-const TestimonialsSection = () => {
+  const testimonials = reviews
+    .filter((r) => r.comment && r.comment.trim().length > 0)
+    .map((r) => toTestimonial(r, deriveRoleLabel(r)));
+
+  if (testimonials.length < 3) return null;
+
+  const allRatings = await prisma.review.aggregate({ _avg: { rating: true }, _count: { rating: true } });
+  const avgRating = allRatings._avg.rating ?? 0;
+  const totalCount = allRatings._count.rating;
+
   return (
     <section className="relative py-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 to-background" />
@@ -47,8 +45,8 @@ const TestimonialsSection = () => {
                 <Star key={i} size={13} className="text-yellow-400 fill-yellow-400" />
               ))}
             </div>
-            <span className="text-sm font-semibold">4.9</span>
-            <span className="text-xs text-muted-foreground">dari 2,000+ ulasan</span>
+            <span className="text-sm font-semibold">{avgRating.toFixed(1)}</span>
+            <span className="text-xs text-muted-foreground">dari {totalCount} ulasan</span>
           </div>
         </div>
       </div>
@@ -60,7 +58,7 @@ const TestimonialsSection = () => {
         <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
         <div className="flex gap-5 animate-marquee" style={{ width: "max-content" }}>
-          {[...EXTENDED, ...EXTENDED].map((t, idx) => (
+          {[...testimonials, ...testimonials].map((t, idx) => (
             <div
               key={`${t.id}-${idx}`}
               className="w-80 shrink-0 glass rounded-2xl p-6 border border-border/20 hover:border-primary/30 transition-all duration-300 relative group"
