@@ -15,6 +15,7 @@ interface RetailPaymentProps {
   orderId: string;
   successUrl: string;
   onClearCart?: () => void;
+  onConfirm?: () => Promise<string | void>;
 }
 
 const STORE_META: Record<string, { emoji: string; color: string; bg: string; steps: string[] }> = {
@@ -44,7 +45,7 @@ const STORE_META: Record<string, { emoji: string; color: string; bg: string; ste
   },
 };
 
-const RetailPayment = ({ methodId, methodName, total, fee, orderId, successUrl, onClearCart }: RetailPaymentProps) => {
+const RetailPayment = ({ methodId, methodName, total, fee, orderId, successUrl, onClearCart, onConfirm }: RetailPaymentProps) => {
   const router = useRouter();
   const meta = STORE_META[methodId] ?? STORE_META.indomaret;
 
@@ -54,6 +55,7 @@ const RetailPayment = ({ methodId, methodName, total, fee, orderId, successUrl, 
 
   const [copied, setCopied] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const copy = () => {
     navigator.clipboard.writeText(paymentCode);
@@ -63,9 +65,16 @@ const RetailPayment = ({ methodId, methodName, total, fee, orderId, successUrl, 
 
   const handleConfirm = async () => {
     setChecking(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    onClearCart?.();
-    router.push(successUrl);
+    setError(null);
+    try {
+      await new Promise((r) => setTimeout(r, 2000));
+      const redirectUrl = await onConfirm?.();
+      onClearCart?.();
+      router.push(redirectUrl || successUrl);
+    } catch (err) {
+      setChecking(false);
+      setError(err instanceof Error ? err.message : "Gagal memproses pembayaran.");
+    }
   };
 
   return (
@@ -139,6 +148,12 @@ const RetailPayment = ({ methodId, methodName, total, fee, orderId, successUrl, 
           ))}
         </ol>
       </div>
+
+      {error && (
+        <div className="px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-sm text-red-400">
+          {error}
+        </div>
+      )}
 
       <Button
         variant="hero"

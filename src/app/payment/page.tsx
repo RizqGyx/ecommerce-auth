@@ -10,10 +10,13 @@ import EWalletPayment from "@/components/molecules/payment/EWalletPayment";
 import VAPayment from "@/components/molecules/payment/VAPayment";
 import CardPayment from "@/components/molecules/payment/CardPayment";
 import RetailPayment from "@/components/molecules/payment/RetailPayment";
+import { placeOrder } from "@/app/checkout/actions";
+import { confirmClassBooking } from "@/app/booking/actions";
+import { confirmPtBooking } from "@/app/personal-trainer/book/actions";
 
 function PaymentContent() {
   const params = useSearchParams();
-  const { clearCart } = useCart();
+  const { items, clearCart } = useCart();
 
   const category = params.get("category") ?? "ewallet";
   const method = params.get("method") ?? "gopay";
@@ -48,6 +51,24 @@ function PaymentContent() {
 
   const onClearCart = type === "shop" ? clearCart : undefined;
 
+  const onConfirm = async (): Promise<string | void> => {
+    if (type === "pt") {
+      const coachId = params.get("coachId") ?? "";
+      const packageId = params.get("packageId") ?? "";
+      const booking = await confirmPtBooking(coachId, packageId);
+      return `${successUrl}&bookingId=${booking.id}`;
+    } else if (type === "booking") {
+      const sessionId = params.get("sessionId") ?? "";
+      await confirmClassBooking(sessionId);
+    } else {
+      await placeOrder(
+        orderId,
+        items.map((i) => ({ productId: i.id, quantity: i.quantity })),
+        methodName
+      );
+    }
+  };
+
   const renderPayment = () => {
     switch (category) {
       case "qris":
@@ -57,6 +78,7 @@ function PaymentContent() {
             orderId={orderId}
             successUrl={successUrl}
             onClearCart={onClearCart}
+            onConfirm={onConfirm}
           />
         );
       case "ewallet":
@@ -67,6 +89,7 @@ function PaymentContent() {
             total={total}
             successUrl={successUrl}
             onClearCart={onClearCart}
+            onConfirm={onConfirm}
           />
         );
       case "bank":
@@ -78,6 +101,7 @@ function PaymentContent() {
             orderId={orderId}
             successUrl={successUrl}
             onClearCart={onClearCart}
+            onConfirm={onConfirm}
           />
         );
       case "card":
@@ -86,6 +110,7 @@ function PaymentContent() {
             total={total}
             successUrl={successUrl}
             onClearCart={onClearCart}
+            onConfirm={onConfirm}
           />
         );
       case "retail":
@@ -98,6 +123,7 @@ function PaymentContent() {
             orderId={orderId}
             successUrl={successUrl}
             onClearCart={onClearCart}
+            onConfirm={onConfirm}
           />
         );
       default:
