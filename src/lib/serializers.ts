@@ -4,13 +4,6 @@ import type {
 } from "@/generated/prisma";
 import type { PricingFeature } from "@/components/molecules/PricingCard";
 
-const LEVEL_LABELS: Record<string, string> = {
-  ALL_LEVELS: "All Levels",
-  BEGINNER: "Beginner",
-  INTERMEDIATE: "Intermediate",
-  ADVANCED: "Advanced",
-};
-
 export function toBlogPostData(post: BlogPost) {
   return {
     ...post,
@@ -181,7 +174,6 @@ export function toScheduleSession(session: ScheduleSessionRow) {
     capacity: session.capacity,
     enrolled: session._count.registrations,
     price: session.price,
-    level: LEVEL_LABELS[session.classType.level] ?? session.classType.level,
     color: session.classType.color ?? "from-primary to-accent",
   };
 }

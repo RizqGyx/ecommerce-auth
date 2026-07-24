@@ -28,7 +28,6 @@ export default async function AdminClassesPage() {
           { header: "Nama", render: (c) => <span className="font-semibold">{c.icon} {c.name}</span> },
           { header: "Slug", render: (c) => c.slug },
           { header: "Durasi", render: (c) => `${c.duration} menit` },
-          { header: "Level", render: (c) => c.level },
           {
             header: "Aksi",
             render: (c) => (

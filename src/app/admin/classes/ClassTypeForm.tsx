@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import type { ClassType } from "@/generated/prisma";
 
@@ -32,20 +31,9 @@ export default function ClassTypeForm({ action, classType }: ClassTypeFormProps)
         <Textarea id="description" name="description" rows={4} defaultValue={classType?.description} required />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="duration">Durasi (menit)</Label>
-          <Input id="duration" name="duration" type="number" min={1} defaultValue={classType?.duration} required />
-        </div>
-        <div>
-          <Label htmlFor="level">Level</Label>
-          <Select id="level" name="level" defaultValue={classType?.level ?? "ALL_LEVELS"} required>
-            <option value="ALL_LEVELS">All Levels</option>
-            <option value="BEGINNER">Beginner</option>
-            <option value="INTERMEDIATE">Intermediate</option>
-            <option value="ADVANCED">Advanced</option>
-          </Select>
-        </div>
+      <div>
+        <Label htmlFor="duration">Durasi (menit)</Label>
+        <Input id="duration" name="duration" type="number" min={1} defaultValue={classType?.duration} required />
       </div>
 
       <div className="grid grid-cols-3 gap-4">

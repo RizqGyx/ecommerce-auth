@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { toPricingCardData } from "@/lib/serializers";
 import { buildMetadata } from "@/lib/seo";
 import FAQAccordion from "./FAQAccordion";
-import { subscribeToPlan } from "./actions";
+import MembershipPurchaseButton from "./MembershipPurchaseButton";
 
 export const metadata = buildMetadata({
   title: "Paket Membership & Harga",
@@ -204,21 +204,17 @@ export default async function MembershipPage() {
                         <CheckCircle2 size={16} /> Paket Aktifmu
                       </div>
                     ) : session?.user?.isVerified ? (
-                      <form action={subscribeToPlan.bind(null, plan.id)} className="mb-8">
-                        <Button
-                          type="submit"
-                          variant={isPopular ? "hero" : isElite ? "neon" : "glass"}
-                          size="lg"
-                          className={`w-full ${
-                            isElite
-                              ? "border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400"
-                              : ""
-                          }`}
-                        >
-                          {currentMembership ? "Ganti ke" : "Pilih"} {plan.name}
-                          <ArrowRight size={16} />
-                        </Button>
-                      </form>
+                      <MembershipPurchaseButton
+                        planId={plan.id}
+                        planName={`${currentMembership ? "Ganti ke" : "Pilih"} ${plan.name}`}
+                        price={plan.price}
+                        variant={isPopular ? "hero" : isElite ? "neon" : "glass"}
+                        buttonClassName={
+                          isElite
+                            ? "border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400"
+                            : ""
+                        }
+                      />
                     ) : session?.user ? (
                       <Button
                         variant={isPopular ? "hero" : isElite ? "neon" : "glass"}

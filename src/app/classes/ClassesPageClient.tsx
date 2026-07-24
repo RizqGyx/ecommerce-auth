@@ -1,26 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock, CheckCircle, Calendar, ChevronRight, Zap, Users, Award, Filter } from "lucide-react";
+import { ArrowRight, Clock, CheckCircle, Calendar, ChevronRight, Zap, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ClassType } from "@/generated/prisma";
-
-const LEVEL_LABELS: Record<string, string> = {
-  ALL_LEVELS: "All Levels",
-  BEGINNER: "Beginner",
-  INTERMEDIATE: "Intermediate",
-  ADVANCED: "Advanced",
-};
-
-const LEVEL_COLORS: Record<string, string> = {
-  ALL_LEVELS: "text-primary border-primary/40 bg-primary/10",
-  BEGINNER: "text-green-400 border-green-400/40 bg-green-400/10",
-  INTERMEDIATE: "text-yellow-400 border-yellow-400/40 bg-yellow-400/10",
-  ADVANCED: "text-red-400 border-red-400/40 bg-red-400/10",
-};
-
-const FILTER_OPTIONS = ["All", "ALL_LEVELS", "BEGINNER", "INTERMEDIATE"];
 
 const WHY_ITEMS = [
   { icon: Award, title: "Instruktur Bersertifikat", desc: "Coach kami memegang sertifikasi nasional & internasional dengan pengalaman kompetitif nyata.", color: "text-yellow-400", bg: "bg-yellow-400/10 border-yellow-400/20" },
@@ -30,9 +13,6 @@ const WHY_ITEMS = [
 ];
 
 export default function ClassesPageClient({ classTypes }: { classTypes: ClassType[] }) {
-  const [filter, setFilter] = useState("All");
-  const filtered = classTypes.filter((c) => filter === "All" || c.level === filter);
-
   return (
     <div className="min-h-screen pt-20 bg-[#0a0a0a]">
 
@@ -141,45 +121,17 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
 
       {/* ── CLASS LIST ───────────────────────────────────────────────────────────── */}
       <section className="py-16 max-w-7xl mx-auto px-6">
-        {/* Section header + filter */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 mb-10">
-          <div>
-            <span className="text-xs font-bold tracking-widest uppercase text-primary mb-2 block">Pilih Kelasmu</span>
-            <h2 className="text-3xl font-black">
-              Semua <span className="gradient-text">Program</span>
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 shrink-0">
-            <Filter size={14} className="text-muted-foreground shrink-0" />
-            {FILTER_OPTIONS.map((opt) => {
-              const sample = classTypes.find((c) => c.level === opt);
-              return (
-                <button
-                  key={opt}
-                  onClick={() => setFilter(opt)}
-                  className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 cursor-pointer ${
-                    filter === opt
-                      ? "bg-primary text-primary-foreground border-primary shadow-[0_0_16px_hsl(195_100%_50%/0.4)]"
-                      : "border-border/40 text-muted-foreground bg-card/50 hover:border-primary/60 hover:text-foreground hover:bg-primary/10"
-                  }`}
-                >
-                  {opt !== "All" && <span>{sample?.icon}</span>}
-                  {opt === "All" ? "Semua Kelas" : LEVEL_LABELS[opt]}
-                </button>
-              );
-            })}
-          </div>
+        {/* Section header */}
+        <div className="mb-10">
+          <span className="text-xs font-bold tracking-widest uppercase text-primary mb-2 block">Pilih Kelasmu</span>
+          <h2 className="text-3xl font-black">
+            Semua <span className="gradient-text">Program</span>
+          </h2>
         </div>
-
-        {/* Count */}
-        <p className="text-xs text-muted-foreground mb-6">
-          Menampilkan <span className="font-bold text-foreground">{filtered.length}</span> dari {classTypes.length} kelas
-        </p>
 
         {/* Card grid — clean 3 col, NOT bento */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((cls) => (
+          {classTypes.map((cls) => (
             <Link
               key={cls.id}
               href={`/classes/${cls.id}`}
@@ -197,9 +149,6 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
                     <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${cls.color} opacity-30 blur-md -z-10`} />
                   </div>
                   <div className="flex flex-col items-end gap-1.5">
-                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${LEVEL_COLORS[cls.level]} uppercase tracking-wide`}>
-                      {LEVEL_LABELS[cls.level]}
-                    </span>
                     <span className="flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary/60 px-2.5 py-1 rounded-full border border-border/30">
                       <Clock size={9} /> {cls.duration} min
                     </span>

@@ -1,18 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, User, CheckCircle, ArrowRight, CreditCard } from "lucide-react";
+import { ArrowLeft, User, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import type { Coach } from "@/generated/prisma";
 import { PT_PACKAGES } from "@/lib/data";
-import PaymentMethodCard, {
-  PAYMENT_METHODS,
-  CATEGORY_LABELS,
-} from "@/components/molecules/PaymentMethodCard";
-
-const PT_PAYMENT_CATEGORIES = ["qris", "ewallet", "bank", "card"] as const;
+import MidtransPayButton from "@/components/organisms/MidtransPayButton";
+import { createPtBookingPaymentIntent } from "./actions";
 
 interface Props {
   pts: Coach[];
@@ -21,8 +17,6 @@ interface Props {
 }
 
 export default function PTBookPageClient({ pts, trainerParam, packageParam }: Props) {
-  const router = useRouter();
-
   const [selectedTrainerId, setSelectedTrainerId] = useState(
     trainerParam || (pts[0]?.id ?? "")
   );
@@ -32,23 +26,11 @@ export default function PTBookPageClient({ pts, trainerParam, packageParam }: Pr
     );
     return found?.id ?? "transform";
   });
-  const [paymentId, setPaymentId] = useState("gopay");
 
   const selectedTrainer = pts.find((c) => c.id === selectedTrainerId) ?? pts[0];
   const selectedPackage = PT_PACKAGES.find((p) => p.id === selectedPackageId) ?? PT_PACKAGES[1];
-  const selectedPayment = PAYMENT_METHODS.find((p) => p.id === paymentId) ?? PAYMENT_METHODS[0];
 
-  const fee = selectedPayment.fee ?? 0;
-  const total = selectedPackage.price + fee;
-
-  const grouped = PAYMENT_METHODS.reduce<Record<string, typeof PAYMENT_METHODS>>(
-    (acc, m) => {
-      if (!acc[m.category]) acc[m.category] = [];
-      acc[m.category].push(m);
-      return acc;
-    },
-    {}
-  );
+  const total = selectedPackage.price;
 
   if (!selectedTrainer) {
     return (
@@ -61,24 +43,8 @@ export default function PTBookPageClient({ pts, trainerParam, packageParam }: Pr
     );
   }
 
-  const handleBook = () => {
-    const ref = `PT-${Date.now().toString(36).toUpperCase()}`;
-    router.push(
-      `/payment?${new URLSearchParams({
-        category: selectedPayment.category,
-        method: selectedPayment.id,
-        methodName: selectedPayment.name,
-        total: String(total),
-        fee: String(fee),
-        type: "pt",
-        ref,
-        coachId: selectedTrainer.id,
-        packageId: selectedPackage.id,
-        trainerName: selectedTrainer.name,
-        package: selectedPackage.name,
-      })}`
-    );
-  };
+  const handleCreateIntent = () =>
+    createPtBookingPaymentIntent(selectedTrainer.id, selectedPackage.id);
 
   return (
     <div className="min-h-screen pt-20 pb-16">
@@ -101,46 +67,24 @@ export default function PTBookPageClient({ pts, trainerParam, packageParam }: Pr
               <h3 className="font-bold mb-4 flex items-center gap-2">
                 <User size={16} className="text-primary" /> Pilih Personal Trainer
               </h3>
-              <div className="space-y-3">
-                {pts.map((pt) => {
-                  const initials = pt.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("");
-                  return (
-                    <button
-                      key={pt.id}
-                      onClick={() => setSelectedTrainerId(pt.id)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
-                        selectedTrainerId === pt.id
-                          ? "border-primary/50 bg-primary/5"
-                          : "border-border/20 hover:border-border/40 hover:bg-secondary/20"
-                      }`}
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-muted flex items-center justify-center shrink-0">
-                        <span className="font-bold text-sm gradient-text">{initials}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm">{pt.name}</p>
-                        <p className="text-xs text-muted-foreground">{pt.title}</p>
-                      </div>
-                      {pt.pricePerSession && (
-                        <span className="text-xs text-primary font-semibold shrink-0">
-                          Rp {pt.pricePerSession.toLocaleString("id-ID")}/sesi
-                        </span>
-                      )}
-                      {selectedTrainerId === pt.id && (
-                        <CheckCircle size={16} className="text-primary shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+              <Select
+                value={selectedTrainerId}
+                onChange={(e) => setSelectedTrainerId(e.target.value)}
+              >
+                {pts.map((pt) => (
+                  <option key={pt.id} value={pt.id}>
+                    {pt.name} — {pt.title}
+                  </option>
+                ))}
+              </Select>
             </div>
 
             {/* Package selection */}
             <div className="glass rounded-2xl border border-border/20 p-6">
               <h3 className="font-bold mb-4">Pilih Paket</h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Harga paket sama untuk semua trainer.
+              </p>
               <div className="space-y-3">
                 {PT_PACKAGES.map((pkg) => (
                   <button
@@ -177,34 +121,6 @@ export default function PTBookPageClient({ pts, trainerParam, packageParam }: Pr
                 ))}
               </div>
             </div>
-
-            {/* Payment method */}
-            <div className="glass rounded-2xl border border-border/20 p-6">
-              <h3 className="font-bold flex items-center gap-2 mb-5">
-                <CreditCard size={18} className="text-primary" /> Metode Pembayaran
-              </h3>
-              <div className="space-y-5">
-                {PT_PAYMENT_CATEGORIES.map((cat) =>
-                  grouped[cat] ? (
-                    <div key={cat}>
-                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">
-                        {CATEGORY_LABELS[cat]}
-                      </div>
-                      <div className="space-y-2">
-                        {grouped[cat].map((m) => (
-                          <PaymentMethodCard
-                            key={m.id}
-                            method={m}
-                            selected={paymentId === m.id}
-                            onSelect={setPaymentId}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ) : null
-                )}
-              </div>
-            </div>
           </div>
 
           {/* Summary */}
@@ -232,16 +148,6 @@ export default function PTBookPageClient({ pts, trainerParam, packageParam }: Pr
               </div>
 
               <div className="border-t border-border/20 pt-3 space-y-2 text-sm">
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Harga paket</span>
-                  <span>Rp {selectedPackage.price.toLocaleString("id-ID")}</span>
-                </div>
-                {fee > 0 && (
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Biaya admin</span>
-                    <span>Rp {fee.toLocaleString("id-ID")}</span>
-                  </div>
-                )}
                 <div className="flex justify-between font-black text-lg pt-2 border-t border-border/20">
                   <span>Total</span>
                   <span className="gradient-text">Rp {total.toLocaleString("id-ID")}</span>
@@ -258,9 +164,7 @@ export default function PTBookPageClient({ pts, trainerParam, packageParam }: Pr
                 ))}
               </div>
 
-              <Button variant="hero" size="lg" className="w-full mt-4 h-12" onClick={handleBook}>
-                Bayar Sekarang <ArrowRight size={16} />
-              </Button>
+              <MidtransPayButton createIntent={handleCreateIntent} label="Bayar Sekarang" className="mt-4" />
               <p className="text-center text-xs text-muted-foreground mt-3">
                 🔒 Aman · Diproses oleh Midtrans
               </p>

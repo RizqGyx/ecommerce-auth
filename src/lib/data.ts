@@ -6,7 +6,6 @@ export const CLASS_TYPES = [
     description:
       "Dance fitness class that combines Latin rhythms with energetic cardio moves. Burn calories while having the time of your life.",
     duration: 60,
-    level: "ALL_LEVELS",
     color: "from-pink-500 to-rose-600",
     colorSolid: "text-pink-400",
     icon: "🕺",
@@ -19,7 +18,6 @@ export const CLASS_TYPES = [
     description:
       "Full-body cardio jam using lightweight drumsticks to pound, squat, lunge, and jump. Where fitness meets music.",
     duration: 45,
-    level: "ALL_LEVELS",
     color: "from-yellow-500 to-orange-600",
     colorSolid: "text-yellow-400",
     icon: "🥁",
@@ -32,7 +30,6 @@ export const CLASS_TYPES = [
     description:
       "The Art of Eight Limbs — a combat sport using fists, elbows, knees, and shins. Ultimate full-body conditioning.",
     duration: 90,
-    level: "ALL_LEVELS",
     color: "from-red-500 to-red-700",
     colorSolid: "text-red-400",
     icon: "🥊",
@@ -45,7 +42,6 @@ export const CLASS_TYPES = [
     description:
       "Master your own bodyweight. From basic movements to advanced skills — build strength, flexibility, and control.",
     duration: 90,
-    level: "INTERMEDIATE",
     color: "from-cyan-500 to-blue-600",
     colorSolid: "text-cyan-400",
     icon: "💪",
@@ -58,7 +54,6 @@ export const CLASS_TYPES = [
     description:
       "Unite mind, body, and breath. Our yoga classes improve flexibility, reduce stress, and build inner strength.",
     duration: 60,
-    level: "BEGINNER",
     color: "from-green-500 to-emerald-600",
     colorSolid: "text-green-400",
     icon: "🧘",
@@ -162,51 +157,50 @@ export const SCHEDULE: Record<string, Array<{
   capacity: number;
   enrolled: number;
   price: number;
-  level: string;
   color: string;
 }>> = {
   Monday: [
-    { id: "m1", time: "06:00", endTime: "07:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 15, price: 50000, level: "Beginner", color: "from-green-500 to-emerald-600" },
-    { id: "m2", time: "08:00", endTime: "09:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 22, price: 45000, level: "All Levels", color: "from-pink-500 to-rose-600" },
-    { id: "m3", time: "10:00", endTime: "11:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 10, price: 60000, level: "Intermediate", color: "from-cyan-500 to-blue-600" },
-    { id: "m4", time: "16:00", endTime: "17:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 18, price: 75000, level: "All Levels", color: "from-red-500 to-red-700" },
-    { id: "m5", time: "19:00", endTime: "20:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 20, price: 45000, level: "All Levels", color: "from-pink-500 to-rose-600" },
+    { id: "m1", time: "06:00", endTime: "07:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 15, price: 50000, color: "from-green-500 to-emerald-600" },
+    { id: "m2", time: "08:00", endTime: "09:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 22, price: 45000, color: "from-pink-500 to-rose-600" },
+    { id: "m3", time: "10:00", endTime: "11:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 10, price: 60000, color: "from-cyan-500 to-blue-600" },
+    { id: "m4", time: "16:00", endTime: "17:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 18, price: 75000, color: "from-red-500 to-red-700" },
+    { id: "m5", time: "19:00", endTime: "20:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 20, price: 45000, color: "from-pink-500 to-rose-600" },
   ],
   Tuesday: [
-    { id: "t1", time: "07:00", endTime: "07:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 16, price: 45000, level: "All Levels", color: "from-yellow-500 to-orange-600" },
-    { id: "t2", time: "09:00", endTime: "10:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 14, price: 60000, level: "Intermediate", color: "from-cyan-500 to-blue-600" },
-    { id: "t3", time: "17:00", endTime: "18:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 19, price: 75000, level: "All Levels", color: "from-red-500 to-red-700" },
-    { id: "t4", time: "19:30", endTime: "20:30", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 12, price: 50000, level: "Beginner", color: "from-green-500 to-emerald-600" },
+    { id: "t1", time: "07:00", endTime: "07:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 16, price: 45000, color: "from-yellow-500 to-orange-600" },
+    { id: "t2", time: "09:00", endTime: "10:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 14, price: 60000, color: "from-cyan-500 to-blue-600" },
+    { id: "t3", time: "17:00", endTime: "18:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 19, price: 75000, color: "from-red-500 to-red-700" },
+    { id: "t4", time: "19:30", endTime: "20:30", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 12, price: 50000, color: "from-green-500 to-emerald-600" },
   ],
   Wednesday: [
-    { id: "w1", time: "06:00", endTime: "07:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 18, price: 50000, level: "Beginner", color: "from-green-500 to-emerald-600" },
-    { id: "w2", time: "08:00", endTime: "09:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 24, price: 45000, level: "All Levels", color: "from-pink-500 to-rose-600" },
-    { id: "w3", time: "10:00", endTime: "10:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 15, price: 45000, level: "All Levels", color: "from-yellow-500 to-orange-600" },
-    { id: "w4", time: "16:00", endTime: "17:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 17, price: 75000, level: "All Levels", color: "from-red-500 to-red-700" },
-    { id: "w5", time: "19:00", endTime: "20:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 13, price: 60000, level: "Intermediate", color: "from-cyan-500 to-blue-600" },
+    { id: "w1", time: "06:00", endTime: "07:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 18, price: 50000, color: "from-green-500 to-emerald-600" },
+    { id: "w2", time: "08:00", endTime: "09:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 24, price: 45000, color: "from-pink-500 to-rose-600" },
+    { id: "w3", time: "10:00", endTime: "10:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 15, price: 45000, color: "from-yellow-500 to-orange-600" },
+    { id: "w4", time: "16:00", endTime: "17:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 17, price: 75000, color: "from-red-500 to-red-700" },
+    { id: "w5", time: "19:00", endTime: "20:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 13, price: 60000, color: "from-cyan-500 to-blue-600" },
   ],
   Thursday: [
-    { id: "th1", time: "07:00", endTime: "07:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 20, price: 45000, level: "All Levels", color: "from-yellow-500 to-orange-600" },
-    { id: "th2", time: "09:00", endTime: "10:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 11, price: 60000, level: "Intermediate", color: "from-cyan-500 to-blue-600" },
-    { id: "th3", time: "17:00", endTime: "18:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 16, price: 75000, level: "All Levels", color: "from-red-500 to-red-700" },
+    { id: "th1", time: "07:00", endTime: "07:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 20, price: 45000, color: "from-yellow-500 to-orange-600" },
+    { id: "th2", time: "09:00", endTime: "10:30", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 15, enrolled: 11, price: 60000, color: "from-cyan-500 to-blue-600" },
+    { id: "th3", time: "17:00", endTime: "18:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 16, price: 75000, color: "from-red-500 to-red-700" },
   ],
   Friday: [
-    { id: "f1", time: "06:00", endTime: "07:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 20, price: 50000, level: "Beginner", color: "from-green-500 to-emerald-600" },
-    { id: "f2", time: "08:00", endTime: "09:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 21, price: 45000, level: "All Levels", color: "from-pink-500 to-rose-600" },
-    { id: "f3", time: "16:00", endTime: "17:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 20, price: 75000, level: "All Levels", color: "from-red-500 to-red-700" },
-    { id: "f4", time: "19:00", endTime: "19:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 18, price: 45000, level: "All Levels", color: "from-yellow-500 to-orange-600" },
+    { id: "f1", time: "06:00", endTime: "07:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 20, price: 50000, color: "from-green-500 to-emerald-600" },
+    { id: "f2", time: "08:00", endTime: "09:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 21, price: 45000, color: "from-pink-500 to-rose-600" },
+    { id: "f3", time: "16:00", endTime: "17:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 20, enrolled: 20, price: 75000, color: "from-red-500 to-red-700" },
+    { id: "f4", time: "19:00", endTime: "19:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 18, price: 45000, color: "from-yellow-500 to-orange-600" },
   ],
   Saturday: [
-    { id: "s1", time: "07:00", endTime: "08:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 30, enrolled: 29, price: 45000, level: "All Levels", color: "from-pink-500 to-rose-600" },
-    { id: "s2", time: "08:30", endTime: "10:00", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 20, enrolled: 18, price: 60000, level: "Intermediate", color: "from-cyan-500 to-blue-600" },
-    { id: "s3", time: "10:00", endTime: "11:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 25, enrolled: 24, price: 75000, level: "All Levels", color: "from-red-500 to-red-700" },
-    { id: "s4", time: "15:00", endTime: "16:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 15, price: 50000, level: "Beginner", color: "from-green-500 to-emerald-600" },
-    { id: "s5", time: "16:30", endTime: "17:15", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 20, price: 45000, level: "All Levels", color: "from-yellow-500 to-orange-600" },
+    { id: "s1", time: "07:00", endTime: "08:00", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 30, enrolled: 29, price: 45000, color: "from-pink-500 to-rose-600" },
+    { id: "s2", time: "08:30", endTime: "10:00", class: "Calisthenics", coach: "Ahmad Rizky", room: "Outdoor Area", capacity: 20, enrolled: 18, price: 60000, color: "from-cyan-500 to-blue-600" },
+    { id: "s3", time: "10:00", endTime: "11:30", class: "Muay Thai", coach: "Budi Santoso", room: "Ring Area", capacity: 25, enrolled: 24, price: 75000, color: "from-red-500 to-red-700" },
+    { id: "s4", time: "15:00", endTime: "16:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 20, enrolled: 15, price: 50000, color: "from-green-500 to-emerald-600" },
+    { id: "s5", time: "16:30", endTime: "17:15", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 20, price: 45000, color: "from-yellow-500 to-orange-600" },
   ],
   Sunday: [
-    { id: "su1", time: "08:00", endTime: "09:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 25, enrolled: 22, price: 50000, level: "All Levels", color: "from-green-500 to-emerald-600" },
-    { id: "su2", time: "09:30", endTime: "10:30", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 20, price: 45000, level: "All Levels", color: "from-pink-500 to-rose-600" },
-    { id: "su3", time: "11:00", endTime: "11:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 17, price: 45000, level: "All Levels", color: "from-yellow-500 to-orange-600" },
+    { id: "su1", time: "08:00", endTime: "09:00", class: "Yoga", coach: "Sari Dewi", room: "Studio A", capacity: 25, enrolled: 22, price: 50000, color: "from-green-500 to-emerald-600" },
+    { id: "su2", time: "09:30", endTime: "10:30", class: "Zumba", coach: "Rina Sari", room: "Studio B", capacity: 25, enrolled: 20, price: 45000, color: "from-pink-500 to-rose-600" },
+    { id: "su3", time: "11:00", endTime: "11:45", class: "Poundfit", coach: "Rina Sari", room: "Studio B", capacity: 20, enrolled: 17, price: 45000, color: "from-yellow-500 to-orange-600" },
   ],
 };
 

@@ -117,11 +117,6 @@ async function main() {
       name: classType.name,
       description: classType.description,
       duration: classType.duration,
-      level: classType.level as
-        | "BEGINNER"
-        | "INTERMEDIATE"
-        | "ADVANCED"
-        | "ALL_LEVELS",
       color: classType.color,
       colorSolid: classType.colorSolid,
       icon: classType.icon,

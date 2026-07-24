@@ -3,11 +3,10 @@ import type { CartItem } from "@/context/CartContext";
 interface Props {
   items: CartItem[];
   courierCost: number;
-  fee: number;
   total: number;
 }
 
-const CheckoutSummary = ({ items, courierCost, fee, total }: Props) => (
+const CheckoutSummary = ({ items, courierCost, total }: Props) => (
   <div className="glass rounded-2xl border border-border/20 p-5 sticky top-24">
     <h3 className="font-bold mb-4">Ringkasan</h3>
     <div className="space-y-2 text-sm mb-4">
@@ -22,11 +21,6 @@ const CheckoutSummary = ({ items, courierCost, fee, total }: Props) => (
       <div className="flex justify-between text-muted-foreground">
         <span>Ongkir</span><span>Rp {courierCost.toLocaleString("id-ID")}</span>
       </div>
-      {fee > 0 && (
-        <div className="flex justify-between text-muted-foreground">
-          <span>Admin</span><span>Rp {fee.toLocaleString("id-ID")}</span>
-        </div>
-      )}
       <div className="flex justify-between font-black text-base pt-2 border-t border-border/20">
         <span>Total</span>
         <span className="gradient-text">Rp {total.toLocaleString("id-ID")}</span>

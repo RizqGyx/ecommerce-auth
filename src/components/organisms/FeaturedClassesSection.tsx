@@ -3,13 +3,6 @@ import { ArrowRight, Clock, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 
-const LEVEL_LABELS: Record<string, string> = {
-  ALL_LEVELS: "All Levels",
-  BEGINNER: "Beginner",
-  INTERMEDIATE: "Intermediate",
-  ADVANCED: "Advanced",
-};
-
 const FeaturedClassesSection = async () => {
   const classTypes = await prisma.classType.findMany({ orderBy: { name: "asc" } });
   const [hero, ...rest] = classTypes;
@@ -49,9 +42,6 @@ const FeaturedClassesSection = async () => {
             <span className="text-7xl lg:text-8xl shrink-0">{hero.icon}</span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-bold text-white/60 uppercase tracking-widest border border-white/20 px-2 py-0.5 rounded-full">
-                  {LEVEL_LABELS[hero.level] ?? hero.level}
-                </span>
                 <div className="flex items-center gap-1 text-white/60 text-xs">
                   <Clock size={11} /> {hero.duration} min
                 </div>

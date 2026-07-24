@@ -1,5 +1,6 @@
 import { ChevronRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import MidtransPayButton from "@/components/organisms/MidtransPayButton";
 
 interface Session {
   class: string;
@@ -11,14 +12,13 @@ interface Session {
 interface Props {
   session: Session;
   day: string;
-  fee: number;
   total: number;
   agreed: boolean;
   onAgree: () => void;
-  onBook: () => void;
+  createIntent: () => Promise<{ intentId: string; snapToken: string }>;
 }
 
-const BookingSummaryPanel = ({ session, day, fee, total, agreed, onAgree, onBook }: Props) => (
+const BookingSummaryPanel = ({ session, day, total, agreed, onAgree, createIntent }: Props) => (
   <div className="glass rounded-2xl border border-border/20 p-5 sticky top-24">
     <h3 className="font-bold mb-4">Ringkasan Booking</h3>
 
@@ -32,11 +32,6 @@ const BookingSummaryPanel = ({ session, day, fee, total, agreed, onAgree, onBook
       <div className="flex justify-between text-muted-foreground">
         <span>Harga kelas</span><span>Rp {session.price.toLocaleString("id-ID")}</span>
       </div>
-      {fee > 0 && (
-        <div className="flex justify-between text-muted-foreground">
-          <span>Biaya admin</span><span>Rp {fee.toLocaleString("id-ID")}</span>
-        </div>
-      )}
       <div className="flex justify-between font-black text-lg pt-3 border-t border-border/20">
         <span>Total</span>
         <span className="gradient-text">Rp {total.toLocaleString("id-ID")}</span>
@@ -56,9 +51,13 @@ const BookingSummaryPanel = ({ session, day, fee, total, agreed, onAgree, onBook
       </span>
     </label>
 
-    <Button variant="hero" size="lg" className="w-full mt-4 h-12" onClick={onBook} disabled={!agreed}>
-      Konfirmasi Booking <ChevronRight size={16} />
-    </Button>
+    {agreed ? (
+      <MidtransPayButton createIntent={createIntent} label="Konfirmasi & Bayar" className="mt-4" />
+    ) : (
+      <Button variant="hero" size="lg" className="w-full mt-4 h-12" disabled>
+        Konfirmasi Booking <ChevronRight size={16} />
+      </Button>
+    )}
     <p className="text-center text-xs text-muted-foreground mt-3">🔒 Aman · Diproses oleh Midtrans</p>
   </div>
 );
