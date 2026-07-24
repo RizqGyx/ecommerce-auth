@@ -1,8 +1,13 @@
 import nodemailer from "nodemailer";
 import { OTP_EXPIRY_MINUTES } from "@/lib/otp";
 
+// `pool: true` keeps a warm SMTP connection instead of renegotiating TLS with
+// Gmail from scratch on every send — a cold first connection is the usual
+// cause of the first OTP silently failing while "resend" (a warm second
+// connection) works fine.
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  pool: true,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
@@ -10,7 +15,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendOtpEmail(to: string, code: string) {
-  await transporter.sendMail({
+  const mail = {
     from: `"S-One Gym" <${process.env.GMAIL_USER}>`,
     to,
     subject: "Kode Verifikasi Akun S-One Gym",
@@ -22,5 +27,13 @@ export async function sendOtpEmail(to: string, code: string) {
         <p style="color: #666; font-size: 14px;">Kode ini berlaku selama ${OTP_EXPIRY_MINUTES} menit. Jika kamu tidak merasa mendaftar di S-One Gym, abaikan email ini.</p>
       </div>
     `,
-  });
+  };
+
+  try {
+    await transporter.sendMail(mail);
+  } catch (err) {
+    // One retry: covers the transient "first connection of the process" flake.
+    console.error("sendOtpEmail failed, retrying once:", err);
+    await transporter.sendMail(mail);
+  }
 }
