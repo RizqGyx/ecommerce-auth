@@ -9,6 +9,7 @@ import {
   Users,
   CreditCard,
   Newspaper,
+  ClipboardCheck,
   ArrowLeft,
   LogOut,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { name: "Products", href: "/admin/products", icon: ShoppingBag },
   { name: "Classes", href: "/admin/classes", icon: Dumbbell },
   { name: "Coaches", href: "/admin/coaches", icon: Users },
+  { name: "PT Bookings", href: "/admin/pt-bookings", icon: ClipboardCheck },
   { name: "Membership Plans", href: "/admin/membership-plans", icon: CreditCard },
   { name: "Blog Posts", href: "/admin/blog-posts", icon: Newspaper },
 ];

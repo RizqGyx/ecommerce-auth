@@ -32,6 +32,7 @@ model User {
   otps                 Otp[]
   ptBookings           PTBooking[]
   notifications        Notification[]
+  paymentIntents       PaymentIntent[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -296,6 +297,42 @@ enum NotificationType {
   SYSTEM
 }
 
+enum PaymentIntentType {
+  SHOP
+  CLASS_BOOKING
+  PT_BOOKING
+  MEMBERSHIP
+}
+
+enum PaymentIntentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// Created the moment a user clicks "Bayar" — id doubles as the Midtrans
+// order_id. Domain rows (Order, ClassRegistration, PTBooking, GymMembership)
+// are only created once this flips to SUCCESS (see src/lib/paymentIntent.ts),
+// confirmed either by the Midtrans webhook or by actively polling Midtrans's
+// status API — never by the client alone.
+model PaymentIntent {
+  id        String              @id @default(cuid())
+  userId    String
+  type      PaymentIntentType
+  status    PaymentIntentStatus @default(PENDING)
+  amount    Int
+  payload   Json
+  snapToken String?
+  resultRef String?
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
 // ─── Gym-Specific Models ────────────────────────────────────────────────────
 
 model MembershipPlan {
@@ -402,7 +439,6 @@ model ClassType {
   description String
   imageUrl    String?
   duration    Int
-  level       ClassLevel     @default(ALL_LEVELS)
   color       String?
   colorSolid  String?
   icon        String?
@@ -411,13 +447,6 @@ model ClassType {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-enum ClassLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  ALL_LEVELS
 }
 
 model ClassSession {

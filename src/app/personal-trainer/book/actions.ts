@@ -2,10 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireVerifiedUser } from "@/lib/authGuards";
-import { createNotification } from "@/lib/notifications";
+import { createPaymentIntent } from "@/lib/paymentIntent";
 import { PT_PACKAGES } from "@/lib/data";
 
-export async function confirmPtBooking(coachId: string, packageId: string) {
+export async function createPtBookingPaymentIntent(coachId: string, packageId: string) {
   const session = await requireVerifiedUser("/personal-trainer/book");
 
   const pkg = PT_PACKAGES.find((p) => p.id === packageId);
@@ -14,30 +14,12 @@ export async function confirmPtBooking(coachId: string, packageId: string) {
   const coach = await prisma.coach.findUnique({ where: { id: coachId } });
   if (!coach) throw new Error("Trainer tidak ditemukan.");
 
-  const startDate = new Date();
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + pkg.validDays);
-
-  const booking = await prisma.pTBooking.create({
-    data: {
-      userId: session.user.id,
-      coachId,
-      packageName: pkg.name,
-      sessionsTotal: pkg.sessions,
-      price: pkg.price,
-      startDate,
-      endDate,
-    },
-  });
-
-  await createNotification(prisma, {
+  return createPaymentIntent({
     userId: session.user.id,
-    type: "PT",
-    sourceId: booking.id,
-    title: "Paket PT Aktif",
-    body: `Paket ${pkg.name} bersama ${coach.name} telah aktif. Selamat berlatih!`,
-    actionUrl: "/dashboard",
+    userName: session.user.name ?? "Member",
+    userEmail: session.user.email ?? "",
+    type: "PT_BOOKING",
+    amount: pkg.price,
+    payload: { coachId, packageId },
   });
-
-  return { id: booking.id };
 }

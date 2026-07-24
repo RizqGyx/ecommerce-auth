@@ -2,30 +2,20 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireVerifiedUser } from "@/lib/authGuards";
-import { createNotification } from "@/lib/notifications";
+import { createPaymentIntent } from "@/lib/paymentIntent";
 
-export async function confirmClassBooking(sessionId: string) {
+export async function createClassBookingPaymentIntent(sessionId: string) {
   const session = await requireVerifiedUser(`/booking?sessionId=${sessionId}`);
 
-  const classSession = await prisma.classSession.findUnique({
-    where: { id: sessionId },
-    include: { classType: true, coach: true },
-  });
+  const classSession = await prisma.classSession.findUnique({ where: { id: sessionId } });
   if (!classSession) throw new Error("Sesi kelas tidak ditemukan.");
 
-  const registration = await prisma.classRegistration.upsert({
-    where: { userId_sessionId: { userId: session.user.id, sessionId } },
-    update: {},
-    create: { userId: session.user.id, sessionId },
-  });
-
-  const dateLabel = classSession.date.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
-  await createNotification(prisma, {
+  return createPaymentIntent({
     userId: session.user.id,
-    type: "BOOKING",
-    sourceId: registration.id,
-    title: "Booking Dikonfirmasi",
-    body: `Kelas ${classSession.classType.name} bersama ${classSession.coach.name}, ${dateLabel} pukul ${classSession.startTime} berhasil dikonfirmasi.`,
-    actionUrl: "/schedule",
+    userName: session.user.name ?? "Member",
+    userEmail: session.user.email ?? "",
+    type: "CLASS_BOOKING",
+    amount: classSession.price,
+    payload: { sessionId },
   });
 }

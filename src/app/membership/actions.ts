@@ -1,30 +1,21 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireVerifiedUser } from "@/lib/authGuards";
+import { createPaymentIntent } from "@/lib/paymentIntent";
 
-export async function subscribeToPlan(planId: string) {
+export async function createMembershipPaymentIntent(planId: string, months: number) {
   const session = await requireVerifiedUser("/membership");
 
-  const startDate = new Date();
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 30);
+  const plan = await prisma.membershipPlan.findUnique({ where: { id: planId } });
+  if (!plan) throw new Error("Paket membership tidak ditemukan.");
 
-  const membership = await prisma.gymMembership.upsert({
-    where: { userId: session.user.id },
-    update: { planId, status: "ACTIVE", startDate, endDate },
-    create: { userId: session.user.id, planId, status: "ACTIVE", startDate, endDate },
+  return createPaymentIntent({
+    userId: session.user.id,
+    userName: session.user.name ?? "Member",
+    userEmail: session.user.email ?? "",
+    type: "MEMBERSHIP",
+    amount: plan.price * months,
+    payload: { planId, months },
   });
-
-  await prisma.memberCard.upsert({
-    where: { userId: session.user.id },
-    update: { membershipId: membership.id },
-    create: { userId: session.user.id, membershipId: membership.id },
-  });
-
-  revalidatePath("/membership");
-  revalidatePath("/dashboard");
-  redirect("/dashboard");
 }

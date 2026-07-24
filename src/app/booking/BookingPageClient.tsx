@@ -1,16 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CreditCard } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import PaymentMethodCard, { PAYMENT_METHODS, CATEGORY_LABELS } from "@/components/molecules/PaymentMethodCard";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { toScheduleSession } from "@/lib/serializers";
 import BookingClassCard from "@/components/molecules/BookingClassCard";
 import BookingSummaryPanel from "@/components/molecules/BookingSummaryPanel";
-
-const BOOKING_CATEGORIES = ["qris", "ewallet", "bank", "card"] as const;
+import { createClassBookingPaymentIntent } from "./actions";
 
 interface Props {
   session: ReturnType<typeof toScheduleSession>;
@@ -19,38 +15,11 @@ interface Props {
 }
 
 export default function BookingPageClient({ session, day, sessionId }: Props) {
-  const router = useRouter();
-  const [paymentId, setPaymentId] = useState("gopay");
   const [agreed, setAgreed] = useState(false);
 
-  const selectedPayment = PAYMENT_METHODS.find((p) => p.id === paymentId) ?? PAYMENT_METHODS[0];
-  const fee = selectedPayment.fee ?? 0;
-  const total = (session?.price ?? 0) + fee;
+  const total = session?.price ?? 0;
 
-  const grouped = PAYMENT_METHODS.reduce<Record<string, typeof PAYMENT_METHODS>>((acc, m) => {
-    if (!acc[m.category]) acc[m.category] = [];
-    acc[m.category].push(m);
-    return acc;
-  }, {});
-
-  const handleBook = () => {
-    if (!agreed) return;
-    const ref = `BKG-${Date.now().toString(36).toUpperCase()}`;
-    router.push(`/payment?${new URLSearchParams({
-      category:   selectedPayment.category,
-      method:     selectedPayment.id,
-      methodName: selectedPayment.name,
-      total:      String(total),
-      fee:        String(fee),
-      type:       "booking",
-      ref,
-      sessionId,
-      class:      session.class,
-      day,
-      time:       session.time,
-      coach:      session.coach,
-    })}`);
-  };
+  const handleCreateIntent = () => createClassBookingPaymentIntent(sessionId);
 
   return (
     <div className="min-h-screen pt-20 pb-16">
@@ -64,31 +33,16 @@ export default function BookingPageClient({ session, day, sessionId }: Props) {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* LEFT: Class details + payment method */}
+          {/* LEFT: Class details */}
           <div className="lg:col-span-3 space-y-5">
             <BookingClassCard session={session} day={day} />
 
-            {/* Payment method selection */}
-            <div className="glass rounded-2xl border border-border/20 p-6">
-              <h3 className="font-bold flex items-center gap-2 mb-5">
-                <CreditCard size={18} className="text-primary" /> Metode Pembayaran
-              </h3>
-              <div className="space-y-5">
-                {BOOKING_CATEGORIES.map((cat) =>
-                  grouped[cat] ? (
-                    <div key={cat}>
-                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">
-                        {CATEGORY_LABELS[cat]}
-                      </div>
-                      <div className="space-y-2">
-                        {grouped[cat].map((m) => (
-                          <PaymentMethodCard key={m.id} method={m} selected={paymentId === m.id} onSelect={setPaymentId} />
-                        ))}
-                      </div>
-                    </div>
-                  ) : null
-                )}
-              </div>
+            <div className="glass rounded-2xl border border-border/20 p-6 flex items-center gap-3">
+              <ShieldCheck size={18} className="text-green-400 shrink-0" />
+              <p className="text-xs text-muted-foreground">
+                Pembayaran diproses secara aman melalui Midtrans. Kamu bisa memilih GoPay, OVO, transfer bank,
+                kartu kredit/debit, dan metode lainnya di halaman pembayaran.
+              </p>
             </div>
           </div>
 
@@ -97,11 +51,10 @@ export default function BookingPageClient({ session, day, sessionId }: Props) {
             <BookingSummaryPanel
               session={session}
               day={day}
-              fee={fee}
               total={total}
               agreed={agreed}
               onAgree={() => setAgreed((v) => !v)}
-              onBook={handleBook}
+              createIntent={handleCreateIntent}
             />
           </div>
         </div>

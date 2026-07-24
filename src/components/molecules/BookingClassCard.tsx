@@ -6,7 +6,6 @@ interface Session {
   endTime: string;
   coach: string;
   room: string;
-  level: string;
   capacity: number;
   enrolled: number;
   color: string;
@@ -39,13 +38,7 @@ const BookingClassCard = ({ session, day }: Props) => (
         ))}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-border/20 flex items-center justify-between">
-        <div>
-          <div className="text-xs text-muted-foreground">Level</div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full border text-primary border-primary/30 bg-primary/10">
-            {session.level}
-          </span>
-        </div>
+      <div className="mt-4 pt-4 border-t border-border/20 flex items-center justify-end">
         <div className="text-right">
           <div className="text-xs text-muted-foreground">Kapasitas</div>
           <div className="text-sm font-semibold text-yellow-400">

@@ -255,20 +255,11 @@ export default function SchedulePageClient({
                           </div>
                         </div>
 
-                        {/* Location + Level */}
+                        {/* Location */}
                         <div className="flex items-center gap-4 lg:flex-1 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1.5 text-xs">
                             <MapPin size={11} className="text-primary/60" />
                             {session.room}
-                          </span>
-                          <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                              session.level === "All Levels"
-                                ? "text-primary border-primary/30 bg-primary/10"
-                                : "text-accent border-accent/30 bg-accent/10"
-                            }`}
-                          >
-                            {session.level}
                           </span>
                         </div>
 

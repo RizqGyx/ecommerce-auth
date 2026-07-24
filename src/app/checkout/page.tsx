@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, MapPin, Package, CreditCard, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
-import { PAYMENT_METHODS } from "@/components/molecules/PaymentMethodCard";
 import { COURIERS } from "@/lib/data";
 import AddressForm, { type AddressData } from "@/components/molecules/checkout/AddressForm";
 import OrderReview from "@/components/molecules/checkout/OrderReview";
 import PaymentStep from "@/components/molecules/checkout/PaymentStep";
 import CheckoutSummary from "@/components/molecules/checkout/CheckoutSummary";
+import { createShopPaymentIntent } from "./actions";
 
 type Step = "address" | "review" | "payment";
 
@@ -33,31 +32,17 @@ const DEFAULT_ADDRESS: AddressData = {
 };
 
 export default function CheckoutPage() {
-  const router = useRouter();
   const { items, subtotal } = useCart();
 
   const [step, setStep]         = useState<Step>("address");
   const [address, setAddress]   = useState<AddressData>(DEFAULT_ADDRESS);
   const [courierId, setCourierId] = useState(COURIERS[0].id);
-  const [paymentId, setPaymentId] = useState("gopay");
 
   const selectedCourier = COURIERS.find((c) => c.id === courierId) ?? COURIERS[0];
-  const selectedPayment = PAYMENT_METHODS.find((p) => p.id === paymentId) ?? PAYMENT_METHODS[0];
-  const fee   = selectedPayment.fee ?? 0;
-  const total = subtotal + selectedCourier.cost + fee;
+  const total = subtotal + selectedCourier.cost;
 
-  const handlePay = () => {
-    const orderId = `S1G-${Date.now().toString(36).toUpperCase()}`;
-    router.push(`/payment?${new URLSearchParams({
-      category: selectedPayment.category,
-      method: selectedPayment.id,
-      methodName: selectedPayment.name,
-      total: String(total),
-      fee: String(fee),
-      type: "shop",
-      orderId,
-    })}`);
-  };
+  const handleCreateIntent = () =>
+    createShopPaymentIntent(items.map((i) => ({ productId: i.id, quantity: i.quantity })));
 
   if (items.length === 0) {
     return (
@@ -119,10 +104,9 @@ export default function CheckoutPage() {
             )}
             {step === "payment" && (
               <PaymentStep
-                paymentId={paymentId} onSelect={setPaymentId}
                 subtotal={subtotal} courierCost={selectedCourier.cost}
-                fee={fee} total={total}
-                courierName={selectedCourier.name} onPay={handlePay}
+                total={total}
+                courierName={selectedCourier.name} createIntent={handleCreateIntent}
               />
             )}
           </div>
@@ -130,7 +114,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-1">
             <CheckoutSummary
               items={items} courierCost={selectedCourier.cost}
-              fee={fee} total={total}
+              total={total}
             />
           </div>
         </div>

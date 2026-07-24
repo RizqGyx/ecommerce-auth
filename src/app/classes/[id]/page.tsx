@@ -6,20 +6,6 @@ import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import { buildMetadata } from "@/lib/seo";
 
-const LEVEL_LABELS: Record<string, string> = {
-  ALL_LEVELS: "All Levels",
-  BEGINNER: "Beginner",
-  INTERMEDIATE: "Intermediate",
-  ADVANCED: "Advanced",
-};
-
-const LEVEL_COLOR: Record<string, string> = {
-  ALL_LEVELS: "text-blue-400 border-blue-400/30 bg-blue-400/10",
-  BEGINNER: "text-green-400 border-green-400/30 bg-green-400/10",
-  INTERMEDIATE: "text-yellow-400 border-yellow-400/30 bg-yellow-400/10",
-  ADVANCED: "text-red-400 border-red-400/30 bg-red-400/10",
-};
-
 const getClassType = cache((id: string) => prisma.classType.findUnique({ where: { id } }));
 
 export async function generateMetadata({
@@ -74,11 +60,6 @@ export default async function ClassDetailPage({
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
             <span className="text-7xl">{cls.icon}</span>
             <div>
-              <span
-                className={`text-xs font-bold px-2.5 py-1 rounded-full border ${LEVEL_COLOR[cls.level]} mb-2 inline-block`}
-              >
-                {LEVEL_LABELS[cls.level]}
-              </span>
               <h1 className="text-4xl md:text-5xl font-black text-white">{cls.name}</h1>
             </div>
           </div>
@@ -178,7 +159,6 @@ export default async function ClassDetailPage({
               <div className="space-y-2.5 text-sm">
                 {[
                   { label: "Durasi", value: `${cls.duration} menit` },
-                  { label: "Level", value: LEVEL_LABELS[cls.level] },
                   { label: "Sesi per minggu", value: `${sessions.length} sesi` },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between">

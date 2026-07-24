@@ -1,20 +1,28 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { CheckCircle, Calendar, Clock, Users, ArrowRight, CalendarPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Suspense } from "react";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
-function BookingSuccessContent() {
-  const params = useSearchParams();
-  const ref = params.get("ref") ?? "BKG-XXXXXXX";
-  const className = params.get("class") ?? "Kelas";
-  const day = params.get("day") ?? "Senin";
-  const time = params.get("time") ?? "08:00";
-  const coach = params.get("coach") ?? "Coach";
-  const total = Number(params.get("total") ?? 0);
-  const method = params.get("method") ?? "Pembayaran";
+export default async function BookingSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ registrationId?: string }>;
+}) {
+  const { registrationId } = await searchParams;
+  const session = await auth();
+  if (!session?.user || !registrationId) notFound();
+
+  const registration = await prisma.classRegistration.findUnique({
+    where: { id: registrationId },
+    include: { session: { include: { classType: true, coach: true } } },
+  });
+
+  if (!registration || registration.userId !== session.user.id) notFound();
+
+  const { session: classSession } = registration;
+  const dayLabel = classSession.date.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
 
   return (
     <div className="min-h-screen pt-20 flex items-center justify-center px-6">
@@ -29,20 +37,22 @@ function BookingSuccessContent() {
 
         <h1 className="text-3xl font-black mb-2">Booking Berhasil! 🎉</h1>
         <p className="text-muted-foreground mb-8">
-          Tempatmu di kelas <strong className="text-foreground">{className}</strong> telah dikonfirmasi.
+          Tempatmu di kelas <strong className="text-foreground">{classSession.classType.name}</strong> telah dikonfirmasi.
           Datanglah 10 menit lebih awal!
         </p>
 
         {/* Booking card */}
         <div className="glass rounded-2xl border border-primary/20 p-6 text-left mb-6">
           <div className="text-xs font-bold tracking-widest uppercase text-primary/60 mb-1">Referensi Booking</div>
-          <div className="font-mono font-black text-lg gradient-text mb-5">{ref}</div>
+          <div className="font-mono font-black text-lg gradient-text mb-5">
+            BKG-{registration.id.slice(-8).toUpperCase()}
+          </div>
 
           <div className="space-y-3">
             {[
-              { icon: Calendar, label: "Kelas", value: className },
-              { icon: Users, label: "Pelatih", value: coach },
-              { icon: Clock, label: "Jadwal", value: `${day}, ${time}` },
+              { icon: Calendar, label: "Kelas", value: classSession.classType.name },
+              { icon: Users, label: "Pelatih", value: classSession.coach.name },
+              { icon: Clock, label: "Jadwal", value: `${dayLabel}, ${classSession.startTime}` },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-center gap-3 text-sm">
                 <Icon size={15} className="text-primary shrink-0" />
@@ -53,13 +63,9 @@ function BookingSuccessContent() {
           </div>
 
           <div className="mt-4 pt-4 border-t border-border/20 space-y-2 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>Metode Bayar</span>
-              <span className="text-foreground font-medium">{method}</span>
-            </div>
             <div className="flex justify-between font-black">
               <span>Total Dibayar</span>
-              <span className="text-primary">Rp {total.toLocaleString("id-ID")}</span>
+              <span className="text-primary">Rp {classSession.price.toLocaleString("id-ID")}</span>
             </div>
           </div>
         </div>
@@ -84,13 +90,5 @@ function BookingSuccessContent() {
         </p>
       </div>
     </div>
-  );
-}
-
-export default function BookingSuccessPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen pt-20 flex items-center justify-center"><div className="text-muted-foreground">Memuat...</div></div>}>
-      <BookingSuccessContent />
-    </Suspense>
   );
 }

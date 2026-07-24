@@ -13,7 +13,6 @@ export interface SessionData {
   capacity: number;
   enrolled: number;
   price: number;
-  level: string;
   color: string;
 }
 
@@ -57,15 +56,6 @@ const ScheduleSessionCard = ({ session, day, className }: ScheduleSessionCardPro
               <span className="flex items-center gap-1">
                 <MapPin size={12} />
                 {session.room}
-              </span>
-              <span
-                className={`px-2 py-0.5 rounded-full text-xs border ${
-                  session.level === "All Levels"
-                    ? "text-primary border-primary/30 bg-primary/10"
-                    : "text-accent border-accent/30 bg-accent/10"
-                }`}
-              >
-                {session.level}
               </span>
             </div>
           </div>

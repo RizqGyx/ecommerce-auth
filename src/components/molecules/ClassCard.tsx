@@ -3,20 +3,12 @@ import { Clock, ArrowRight, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const LEVEL_LABELS: Record<string, string> = {
-  ALL_LEVELS: "All Levels",
-  BEGINNER: "Beginner",
-  INTERMEDIATE: "Intermediate",
-  ADVANCED: "Advanced",
-};
-
 export interface ClassTypeData {
   id: string;
   name: string;
   slug: string;
   description: string;
   duration: number;
-  level: string;
   color: string;
   colorSolid: string;
   icon: string;
@@ -61,16 +53,11 @@ const ClassCard = ({ cls, variant = "compact", className }: ClassCardProps) => {
       )}
 
       <div className="p-6 relative z-10">
-        <div className="flex items-start justify-between mb-4">
-          {variant === "compact" && (
+        {variant === "compact" && (
+          <div className="flex items-start justify-between mb-4">
             <span className="text-4xl">{cls.icon}</span>
-          )}
-          <span
-            className={`text-xs font-semibold px-2 py-1 rounded-full border ${cls.colorSolid} border-current bg-current/10 ${variant === "full" ? "" : ""}`}
-          >
-            {LEVEL_LABELS[cls.level]}
-          </span>
-        </div>
+          </div>
+        )}
 
         <h3
           className={cn(
