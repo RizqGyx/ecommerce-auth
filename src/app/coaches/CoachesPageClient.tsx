@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Award, Instagram, Star, Filter, Users, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Coach } from "@/generated/prisma";
+import Reveal from "@/components/atoms/Reveal";
 
 const MARQUEE_TAGS = [
   "Zumba Expert", "Muay Thai", "Yoga Alliance RYT-500", "PT Certified",
@@ -35,9 +37,9 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
 
   const allSpecialties = Array.from(new Set(coaches.flatMap((c) => c.specialties)));
   const filterPills = [
-    { label: "All", key: "all" },
-    { label: "Personal Trainers", key: "pt" },
-    { label: "Featured", key: "featured" },
+    { label: "Semua", key: "all" },
+    { label: "Personal Trainer", key: "pt" },
+    { label: "Unggulan", key: "featured" },
     ...allSpecialties.slice(0, 5).map((s) => ({ label: s, key: s })),
   ];
 
@@ -61,24 +63,24 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
         {/* Background layers */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#0d0d1a] to-[#0a0a0a]" />
         <div className="hologram-lines absolute inset-0 opacity-20" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-gradient-radial from-primary/10 via-transparent to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-gradient-radial from-accent/8 via-transparent to-transparent rounded-full blur-2xl" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-accent/8 rounded-full blur-2xl" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 glass border border-primary/20 text-primary text-xs font-bold px-4 py-2 rounded-full mb-8 uppercase tracking-widest">
             <Users size={12} />
-            Our Team
+            Tim Kami
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight mb-6">
-            Meet Our
+            Kenali
             <br />
-            <span className="gradient-text">Coaches</span>
+            <span className="gradient-text">Coach Kami</span>
           </h1>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-12 leading-relaxed">
-            Every coach at S-One holds international certifications and brings
-            real competitive experience. These are the best in Bukittinggi.
+            Setiap coach di S-One memegang sertifikasi internasional dan membawa
+            pengalaman kompetitif nyata. Inilah yang terbaik di Bukittinggi.
           </p>
 
           {/* Marquee strip */}
@@ -124,7 +126,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
 
       {/* ── FEATURED SPOTLIGHT ── */}
       {showFeatured && featuredCoach && (
-        <section className="max-w-7xl mx-auto px-6 pt-16 pb-8">
+        <Reveal><section className="max-w-7xl mx-auto px-6 pt-16 pb-8">
           <div className="relative glass rounded-3xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
             {/* Background glow */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
@@ -135,7 +137,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
               <div className="flex items-center gap-3 mb-8">
                 <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs font-black px-4 py-1.5 rounded-full">
                   <Star size={10} fill="currentColor" />
-                  FEATURED COACH
+                  COACH UNGGULAN
                 </span>
                 {featuredCoach.isPersonalTrainer && (
                   <span className="glass border border-primary/30 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
@@ -147,15 +149,27 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
                 {/* Left: Avatar + stats */}
                 <div className="lg:col-span-2 flex flex-col items-center lg:items-start gap-6">
-                  {/* Big initials avatar */}
-                  <div
-                    className={`relative w-40 h-40 rounded-3xl bg-gradient-to-br ${
-                      INITIALS_GRADIENTS[Math.max(featuredIndex, 0) % INITIALS_GRADIENTS.length]
-                    } border border-primary/30 flex items-center justify-center overflow-hidden`}
-                  >
-                    <span className="text-6xl font-black gradient-text select-none">
-                      {getInitials(featuredCoach.name)}
-                    </span>
+                  {/* Real photo, falls back to initials gradient if missing */}
+                  <div className="relative w-40 h-40 rounded-3xl border border-primary/30 overflow-hidden shrink-0">
+                    {featuredCoach.imageUrl ? (
+                      <Image
+                        src={featuredCoach.imageUrl}
+                        alt={featuredCoach.name}
+                        fill
+                        sizes="160px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div
+                        className={`w-full h-full bg-gradient-to-br ${
+                          INITIALS_GRADIENTS[Math.max(featuredIndex, 0) % INITIALS_GRADIENTS.length]
+                        } flex items-center justify-center`}
+                      >
+                        <span className="text-6xl font-black gradient-text select-none">
+                          {getInitials(featuredCoach.name)}
+                        </span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                   </div>
 
@@ -163,10 +177,10 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                   <div className="flex gap-4">
                     <div className="glass border border-border/20 rounded-xl px-4 py-3 text-center">
                       <div className="text-2xl font-black gradient-text">
-                        {featuredCoach.experience}y
+                        {featuredCoach.experience}th
                       </div>
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">
-                        Experience
+                        Pengalaman
                       </div>
                     </div>
                     <div className="glass border border-border/20 rounded-xl px-4 py-3 text-center">
@@ -174,7 +188,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                         {featuredCoach.specialties.length}
                       </div>
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">
-                        Specialties
+                        Spesialisasi
                       </div>
                     </div>
                     {featuredCoach.pricePerSession && (
@@ -183,7 +197,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                           Rp {(featuredCoach.pricePerSession / 1000).toFixed(0)}k
                         </div>
                         <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">
-                          /session
+                          /sesi
                         </div>
                       </div>
                     )}
@@ -203,7 +217,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                   {/* Specialties grid */}
                   <div className="mb-6">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                      Specialties
+                      Spesialisasi
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {featuredCoach.specialties.map((spec) => (
@@ -220,7 +234,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                   {/* Certifications */}
                   <div className="mb-8">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                      Certifications
+                      Sertifikasi
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                       {featuredCoach.certifications.map((cert) => (
@@ -237,13 +251,13 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                     {featuredCoach.isPersonalTrainer && (
                       <Button variant="hero" asChild>
                         <Link href={`/personal-trainer/book?trainer=${featuredCoach.id}`}>
-                          Book PT Session <ArrowRight size={16} />
+                          Book Sesi PT <ArrowRight size={16} />
                         </Link>
                       </Button>
                     )}
                     <Button variant="neon" asChild>
                       <Link href={`/coaches/${featuredCoach.id}`}>
-                        Full Profile <ChevronRight size={16} />
+                        Profil Lengkap <ChevronRight size={16} />
                       </Link>
                     </Button>
                     {featuredCoach.instagram && (
@@ -262,39 +276,53 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
               </div>
             </div>
           </div>
-        </section>
+        </section></Reveal>
       )}
 
       {/* ── REST OF COACHES GRID ── */}
-      <section className="max-w-7xl mx-auto px-6 py-12">
+      <Reveal><section className="max-w-7xl mx-auto px-6 py-12">
         {restCoaches.length > 0 && (
           <>
             <div className="flex items-center gap-3 mb-8">
               <h2 className="text-xl font-bold">
-                {activeFilter === "all" ? "All Coaches" : "Matching Coaches"}
+                {activeFilter === "all" ? "Semua Coach" : "Coach yang Cocok"}
               </h2>
               <span className="glass border border-border/20 text-xs text-muted-foreground px-3 py-1 rounded-full">
-                {restCoaches.length} coach{restCoaches.length !== 1 ? "es" : ""}
+                {restCoaches.length} coach
               </span>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-5">
+            {/* Roster strip — horizontal scroll of trading-card style portraits, not a grid */}
+            <div className="flex gap-5 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 sm:mx-0 sm:px-0">
               {restCoaches.map((coach, i) => (
                 <div
                   key={coach.id}
-                  className="group glass rounded-2xl overflow-hidden border border-border/20 hover:border-primary/30 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-primary/10"
+                  className="group relative w-56 sm:w-64 shrink-0 snap-start glass rounded-3xl overflow-hidden border border-border/20 hover:border-primary/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10"
                 >
-                  {/* Mini avatar header */}
-                  <div
-                    className={`relative h-28 bg-gradient-to-br ${
-                      INITIALS_GRADIENTS[i % INITIALS_GRADIENTS.length]
-                    } flex items-center justify-center overflow-hidden`}
-                  >
-                    <span className="text-5xl font-black opacity-50 select-none text-white">
-                      {getInitials(coach.name)}
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 to-transparent" />
-                    <div className="absolute top-2.5 right-2.5 flex flex-col gap-1">
+                  {/* Roster number */}
+                  <span className="absolute top-3 left-3 z-10 text-[10px] font-black text-white/50 tracking-widest">
+                    №{String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* Portrait panel — real photo, falls back to initials gradient */}
+                  <div className="relative h-48 overflow-hidden">
+                    {coach.imageUrl ? (
+                      <Image
+                        src={coach.imageUrl}
+                        alt={coach.name}
+                        fill
+                        sizes="256px"
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className={`w-full h-full bg-gradient-to-br ${INITIALS_GRADIENTS[i % INITIALS_GRADIENTS.length]} flex items-center justify-center`}>
+                        <span className="text-6xl font-black opacity-40 select-none text-white">
+                          {getInitials(coach.name)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent" />
+                    <div className="absolute top-3 right-3 flex flex-col gap-1">
                       {coach.isPersonalTrainer && (
                         <span className="bg-primary/90 text-primary-foreground text-[9px] font-black px-2 py-0.5 rounded-full">
                           PT
@@ -306,17 +334,17 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                         </span>
                       )}
                     </div>
+                    {/* Name overlaps portrait/content boundary, sports-card style */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 className="font-black text-lg leading-tight text-white group-hover:text-primary transition-colors">
+                        {coach.name}
+                      </h3>
+                      <p className="text-[11px] text-white/60 leading-tight">{coach.title}</p>
+                    </div>
                   </div>
 
                   <div className="p-4">
-                    <h3 className="font-bold text-sm leading-tight mb-0.5 group-hover:text-primary transition-colors">
-                      {coach.name}
-                    </h3>
-                    <p className="text-[11px] text-muted-foreground mb-3 leading-tight">
-                      {coach.title}
-                    </p>
-
-                    {/* 2 specialty tags */}
+                    {/* Specialty tags */}
                     <div className="flex flex-wrap gap-1 mb-3">
                       {coach.specialties.slice(0, 2).map((spec) => (
                         <span
@@ -331,7 +359,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                     {/* Experience */}
                     <div className="flex items-center gap-1 text-[11px] text-muted-foreground mb-4 pb-3 border-b border-border/20">
                       <Award size={10} className="text-yellow-400 shrink-0" />
-                      {coach.experience} yrs experience
+                      {coach.experience} tahun pengalaman
                     </div>
 
                     {/* Actions */}
@@ -345,7 +373,7 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
                       )}
                       <Button variant="glass" size="sm" className="w-full text-xs h-8" asChild>
                         <Link href={`/coaches/${coach.id}`}>
-                          View Profile
+                          Lihat Profil
                         </Link>
                       </Button>
                     </div>
@@ -358,19 +386,19 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
 
         {filteredCoaches.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">No coaches match this filter.</p>
+            <p className="text-muted-foreground">Tidak ada coach yang cocok dengan filter ini.</p>
             <button
               onClick={() => setActiveFilter("all")}
               className="mt-4 text-primary text-sm hover:underline"
             >
-              Clear filter
+              Hapus filter
             </button>
           </div>
         )}
-      </section>
+      </section></Reveal>
 
       {/* ── BOTTOM CTA BANNER ── */}
-      <section className="relative overflow-hidden py-20 mt-8">
+      <Reveal><section className="relative overflow-hidden py-20 mt-8">
         {/* Diagonal gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-[#0d0820] to-accent/15" />
         <div className="absolute inset-0 hologram-lines opacity-10" />
@@ -388,23 +416,23 @@ export default function CoachesPageClient({ coaches }: { coaches: Coach[] }) {
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 glass border border-primary/20 text-primary text-xs font-bold px-4 py-2 rounded-full mb-6 uppercase tracking-widest">
             <Star size={11} fill="currentColor" />
-            Personalized Training
+            Latihan Personal
           </div>
           <h2 className="text-4xl lg:text-6xl font-black mb-4 leading-tight">
-            Book Your{" "}
-            <span className="gradient-text">Personal Trainer</span>
+            Booking{" "}
+            <span className="gradient-text">Personal Trainer-mu</span>
           </h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-            Stop guessing your way through workouts. Get a certified trainer who
-            builds everything around you.
+            Berhenti menebak-nebak latihanmu. Dapatkan trainer bersertifikat yang
+            merancang semuanya di sekitar dirimu.
           </p>
           <Button variant="hero" size="lg" className="text-base px-10 py-6 h-auto" asChild>
             <Link href="/personal-trainer">
-              Explore Personal Training <ArrowRight size={18} />
+              Jelajahi Personal Training <ArrowRight size={18} />
             </Link>
           </Button>
         </div>
-      </section>
+      </section></Reveal>
     </div>
   );
 }

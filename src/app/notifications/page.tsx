@@ -14,6 +14,7 @@ import {
   getNotifications, markNotificationRead, markNotificationUnread,
   markAllNotificationsRead, toggleNotificationStar, deleteNotification, deleteNotifications,
 } from "./actions";
+import Reveal from "@/components/atoms/Reveal";
 
 const ICON_MAP: Record<NotificationType, React.ElementType> = {
   BOOKING: Calendar,
@@ -105,7 +106,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <div className="max-w-3xl mx-auto px-6">
+      <Reveal className="max-w-3xl mx-auto px-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
@@ -290,7 +291,7 @@ export default function NotificationsPage() {
             <span>Menampilkan {filtered.length} dari {notifs.length} notifikasi</span>
           </div>
         )}
-      </div>
+      </Reveal>
     </div>
   );
 }

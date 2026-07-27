@@ -35,7 +35,7 @@ const PricingCard = ({
   compact = false,
 }: PricingCardProps) => {
   const displayFeatures = compact ? features.slice(0, 5) : features;
-  const label = ctaLabel ?? (popular ? `Get ${name}` : `Start ${name}`);
+  const label = ctaLabel ?? (popular ? `Ambil ${name}` : `Mulai ${name}`);
 
   return (
     <div
@@ -49,7 +49,7 @@ const PricingCard = ({
         <div className="flex justify-center">
           <div className="bg-gradient-to-r from-primary to-accent text-white text-xs font-bold px-6 py-1.5 rounded-b-xl flex items-center gap-1">
             <Star size={11} fill="currentColor" />
-            MOST POPULAR
+            PALING POPULER
           </div>
         </div>
       )}
@@ -68,7 +68,7 @@ const PricingCard = ({
             </span>
           </div>
           <span className="text-sm text-muted-foreground">
-            per month{compact ? "" : ", billed monthly"}
+            per bulan{compact ? "" : ", ditagih bulanan"}
           </span>
         </div>
 

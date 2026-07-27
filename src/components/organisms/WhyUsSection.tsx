@@ -1,4 +1,5 @@
 import { Shield, Zap, Trophy, Users, Clock, Star } from "lucide-react";
+import AnimatedCounter from "@/components/atoms/motion/AnimatedCounter";
 
 const FEATURES = [
   {
@@ -10,7 +11,7 @@ const FEATURES = [
   },
   {
     icon: Zap,
-    title: "Equipment Modern",
+    title: "Alat Modern",
     desc: "Ratusan unit alat dari brand premium — terbaru dan selalu terawat.",
     color: "text-primary",
     bg: "bg-primary/10 border-primary/20",
@@ -58,10 +59,10 @@ const WhyUsSection = () => {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-14">
           <span className="text-xs font-bold tracking-widest uppercase text-primary mb-3 block">
-            Why Choose Us
+            Kenapa Pilih Kami
           </span>
           <h2 className="text-4xl lg:text-5xl font-black">
-            More than a <span className="gradient-text">Gym</span>
+            Lebih dari Sekadar <span className="gradient-text">Gym</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl mx-auto">
             Fasilitas kelas dunia, pelatih berpengalaman, dan komunitas yang mendukung perjalanan fitnesmu.
@@ -99,18 +100,13 @@ const WhyUsSection = () => {
             </div>
           </div>
 
-          {/* Row 2: remaining features — uniform grid, wraps cleanly at any count */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Row 2: remaining features as an open, borderless list — deliberate contrast to row 1's boxes */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-border/15 border-y border-border/15 py-2">
             {rest.map((feature) => {
               const Icon = feature.icon;
               return (
-                <div
-                  key={feature.title}
-                  className={`group glass rounded-2xl border p-6 flex flex-col gap-4 hover:border-primary/30 transition-all duration-300 hover:-translate-y-0.5 ${feature.bg}`}
-                >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${feature.bg} border group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon size={22} className={feature.color} />
-                  </div>
+                <div key={feature.title} className="group flex flex-col gap-3 px-2 sm:px-6 py-6">
+                  <Icon size={24} className={`${feature.color} group-hover:scale-110 transition-transform duration-300`} />
                   <div>
                     <h3 className="font-black text-base mb-1.5">{feature.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
@@ -123,13 +119,13 @@ const WhyUsSection = () => {
           {/* Stats strip spanning full width */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border/20 rounded-2xl overflow-hidden border border-border/20">
             {[
-              { value: "5,000+", label: "Anggota Aktif" },
+              { value: "5.000+", label: "Anggota Aktif" },
               { value: "20+", label: "Program Kelas" },
               { value: "98%", label: "Kepuasan Member" },
               { value: "8 Tahun", label: "Berpengalaman" },
             ].map((stat) => (
               <div key={stat.label} className="bg-card/60 px-6 py-5 text-center hover:bg-card/80 transition-colors">
-                <div className="text-2xl font-black gradient-text mb-0.5">{stat.value}</div>
+                <AnimatedCounter value={stat.value} className="text-2xl font-black gradient-text mb-0.5 block" />
                 <div className="text-xs text-muted-foreground font-medium">{stat.label}</div>
               </div>
             ))}

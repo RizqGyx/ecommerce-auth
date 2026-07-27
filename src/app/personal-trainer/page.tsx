@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Target,
   TrendingUp,
@@ -18,6 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import { buildMetadata } from "@/lib/seo";
+import Reveal from "@/components/atoms/Reveal";
+import MagneticButton from "@/components/atoms/motion/MagneticButton";
 
 export const metadata = buildMetadata({
   title: "Personal Training",
@@ -29,27 +32,27 @@ export const metadata = buildMetadata({
 const PT_BENEFITS = [
   {
     icon: Target,
-    title: "Goal-Specific Programming",
+    title: "Program Sesuai Tujuan",
     description:
-      "Your program is built around your exact goals — fat loss, muscle gain, athletic performance, or rehabilitation.",
+      "Programmu dirancang sesuai tujuan spesifikmu — penurunan lemak, penambahan massa otot, performa atletik, atau rehabilitasi.",
   },
   {
     icon: TrendingUp,
-    title: "Measurable Progress",
+    title: "Progres Terukur",
     description:
-      "Regular assessments, body composition tracking, and performance benchmarks ensure you can see how far you've come.",
+      "Asesmen rutin, pelacakan komposisi tubuh, dan tolok ukur performa memastikan kamu bisa melihat sejauh mana kemajuanmu.",
   },
   {
     icon: Calendar,
-    title: "Flexible Scheduling",
+    title: "Jadwal Fleksibel",
     description:
-      "Sessions booked around your life, not ours. Morning, evening, weekend — whatever works for you.",
+      "Sesi dijadwalkan sesuai hidupmu, bukan sebaliknya. Pagi, malam, akhir pekan — kapan pun yang cocok untukmu.",
   },
   {
     icon: Award,
-    title: "Expert Accountability",
+    title: "Akuntabilitas dari Ahlinya",
     description:
-      "Your PT checks in between sessions, adjusts your nutrition, and keeps you on track when motivation dips.",
+      "PT-mu memantau di antara sesi, menyesuaikan nutrisimu, dan menjagamu tetap on track saat motivasi menurun.",
   },
 ];
 
@@ -60,10 +63,10 @@ const PT_PACKAGES = [
     price: 700000,
     validDays: 30,
     features: [
-      "4 x 60-min PT sessions",
-      "Initial fitness assessment",
-      "Basic nutrition guidelines",
-      "Custom workout plan",
+      "4 x sesi PT 60 menit",
+      "Asesmen kebugaran awal",
+      "Panduan nutrisi dasar",
+      "Program latihan kustom",
     ],
   },
   {
@@ -73,12 +76,12 @@ const PT_PACKAGES = [
     validDays: 30,
     popular: true,
     features: [
-      "8 x 60-min PT sessions",
-      "Full fitness assessment",
-      "Personalized nutrition plan",
-      "Custom workout program",
-      "WhatsApp support",
-      "Monthly progress report",
+      "8 x sesi PT 60 menit",
+      "Asesmen kebugaran lengkap",
+      "Rencana nutrisi personal",
+      "Program latihan kustom",
+      "Dukungan WhatsApp",
+      "Laporan progres bulanan",
     ],
   },
   {
@@ -87,13 +90,13 @@ const PT_PACKAGES = [
     price: 2400000,
     validDays: 60,
     features: [
-      "16 x 60-min PT sessions",
-      "Complete body composition analysis",
-      "Advanced nutrition coaching",
-      "Periodized 8-week program",
-      "Daily WhatsApp support",
-      "Bi-weekly progress reports",
-      "Supplement guidance",
+      "16 x sesi PT 60 menit",
+      "Analisis komposisi tubuh lengkap",
+      "Coaching nutrisi lanjutan",
+      "Program periodisasi 8 minggu",
+      "Dukungan WhatsApp harian",
+      "Laporan progres dua mingguan",
+      "Panduan suplemen",
     ],
   },
 ];
@@ -102,26 +105,26 @@ const PROCESS_STEPS = [
   {
     step: "01",
     icon: Users,
-    title: "Choose a Trainer",
-    desc: "Browse our certified PTs and find the right fit for your personality and goals.",
+    title: "Pilih Trainer",
+    desc: "Jelajahi PT bersertifikat kami dan temukan yang paling cocok dengan kepribadian dan tujuanmu.",
   },
   {
     step: "02",
     icon: MessageSquare,
-    title: "Initial Consultation",
-    desc: "Free 30-minute call to discuss your goals, history, and expectations.",
+    title: "Konsultasi Awal",
+    desc: "Panggilan gratis 30 menit untuk membahas tujuan, riwayat, dan ekspektasimu.",
   },
   {
     step: "03",
     icon: ClipboardList,
-    title: "Program Design",
-    desc: "Your PT builds a fully customized 4–8 week program just for you.",
+    title: "Desain Program",
+    desc: "PT-mu menyusun program 4–8 minggu yang sepenuhnya disesuaikan khusus untukmu.",
   },
   {
     step: "04",
     icon: Dumbbell,
-    title: "Start Training",
-    desc: "Show up, put in the work. Your PT guides every rep and every decision.",
+    title: "Mulai Latihan",
+    desc: "Datang, dan kerjakan. PT-mu membimbing setiap repetisi dan setiap keputusan.",
   },
 ];
 
@@ -146,7 +149,6 @@ export default async function PersonalTrainerPage() {
     where: { isPersonalTrainer: true },
     orderBy: { name: "asc" },
   });
-  const [B0Icon, B1Icon, B2Icon, B3Icon] = PT_BENEFITS.map((b) => b.icon);
 
   return (
     <div className="min-h-screen bg-background">
@@ -157,8 +159,8 @@ export default async function PersonalTrainerPage() {
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#080810] via-[#0d0d1a] to-[#0a0a0a]" />
         <div className="hologram-lines absolute inset-0 opacity-15" />
-        <div className="absolute top-0 left-0 w-[700px] h-[700px] bg-gradient-radial from-primary/8 via-transparent to-transparent rounded-full blur-3xl -translate-x-1/3 -translate-y-1/4" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gradient-radial from-accent/8 via-transparent to-transparent rounded-full blur-3xl translate-x-1/4 translate-y-1/4" />
+        <div className="absolute top-0 left-0 w-[700px] h-[700px] bg-primary/8 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/4" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/8 rounded-full blur-3xl translate-x-1/4 translate-y-1/4" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-16">
           {/* LEFT: Text */}
@@ -168,14 +170,14 @@ export default async function PersonalTrainerPage() {
               Personal Training
             </div>
             <h1 className="text-5xl lg:text-7xl font-black leading-[0.92] tracking-tight mb-6">
-              Your Trainer,
+              Trainer-mu,
               <br />
-              <span className="gradient-text">Your Results</span>
+              <span className="gradient-text">Hasilmu</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-lg">
-              Stop guessing. Start progressing. Our certified personal trainers
-              design programs built specifically around your body, goals, and
-              life.
+              Berhenti menebak-nebak. Mulai progres nyata. Personal trainer
+              bersertifikat kami merancang program yang dibuat khusus untuk
+              tubuh, tujuan, dan hidupmu.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -185,7 +187,7 @@ export default async function PersonalTrainerPage() {
                 asChild
               >
                 <Link href="#trainers">
-                  Meet Our Trainers <ArrowRight size={18} />
+                  Kenali Trainer Kami <ArrowRight size={18} />
                 </Link>
               </Button>
               <Button
@@ -194,7 +196,7 @@ export default async function PersonalTrainerPage() {
                 className="text-base px-10 py-6 h-auto"
                 asChild
               >
-                <Link href="#packages">View Packages</Link>
+                <Link href="#packages">Lihat Paket</Link>
               </Button>
             </div>
 
@@ -202,8 +204,8 @@ export default async function PersonalTrainerPage() {
             <div className="flex flex-wrap gap-3 mt-10">
               {[
                 { icon: Star, label: "4.9★ Rating" },
-                { icon: Users, label: "50+ Clients" },
-                { icon: Award, label: "Certified Trainers" },
+                { icon: Users, label: "50+ Klien" },
+                { icon: Award, label: "Trainer Bersertifikat" },
               ].map(({ icon: Icon, label }) => (
                 <div
                   key={label}
@@ -229,14 +231,20 @@ export default async function PersonalTrainerPage() {
                 }}
               >
                 {/* Avatar circle */}
-                <div
-                  className={`w-14 h-14 rounded-xl bg-gradient-to-br ${
-                    INITIALS_GRADIENTS[i % INITIALS_GRADIENTS.length]
-                  } flex items-center justify-center shrink-0`}
-                >
-                  <span className="text-xl font-black text-white/90 select-none">
-                    {getInitials(pt.name)}
-                  </span>
+                <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                  {pt.imageUrl ? (
+                    <Image src={pt.imageUrl} alt={pt.name} fill sizes="56px" className="object-cover" />
+                  ) : (
+                    <div
+                      className={`w-full h-full bg-gradient-to-br ${
+                        INITIALS_GRADIENTS[i % INITIALS_GRADIENTS.length]
+                      } flex items-center justify-center`}
+                    >
+                      <span className="text-xl font-black text-white/90 select-none">
+                        {getInitials(pt.name)}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="min-w-0">
                   <div className="font-bold text-sm leading-tight">{pt.name}</div>
@@ -254,7 +262,7 @@ export default async function PersonalTrainerPage() {
                 </div>
                 {pt.pricePerSession && (
                   <div className="ml-auto shrink-0 text-right">
-                    <div className="text-xs text-muted-foreground">from</div>
+                    <div className="text-xs text-muted-foreground">mulai</div>
                     <div className="text-sm font-black gradient-text">
                       Rp {(pt.pricePerSession / 1000).toFixed(0)}k
                     </div>
@@ -269,19 +277,19 @@ export default async function PersonalTrainerPage() {
       {/* ═══════════════════════════════════════════════
           WHY PT WORKS — asymmetric layout
       ═══════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
+      <Reveal><section className="max-w-7xl mx-auto px-6 py-24">
         {/* Section label */}
         <div className="mb-12">
           <p className="text-xs font-bold text-primary uppercase tracking-widest mb-3">
-            The difference
+            Perbedaannya
           </p>
           <h2 className="text-4xl lg:text-5xl font-black leading-tight">
-            Why Personal Training{" "}
-            <span className="gradient-text">Works</span>
+            Kenapa Personal Training{" "}
+            <span className="gradient-text">Efektif</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-lg leading-relaxed">
-            Generic programs produce generic results. Personal training delivers
-            outcomes that last.
+            Program generik menghasilkan hasil generik. Personal training
+            memberikan hasil yang bertahan lama.
           </p>
         </div>
 
@@ -306,7 +314,7 @@ export default async function PersonalTrainerPage() {
               </p>
               {/* Decorative tags */}
               <div className="flex flex-wrap gap-2 mt-auto">
-                {["Fat Loss", "Muscle Gain", "Performance", "Rehab"].map((t) => (
+                {["Fat Loss", "Muscle Gain", "Performa", "Rehab"].map((t) => (
                   <span
                     key={t}
                     className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20"
@@ -366,7 +374,7 @@ export default async function PersonalTrainerPage() {
                 </p>
               </div>
               <div className="hidden lg:flex items-center gap-4 shrink-0">
-                {["Check-ins", "Nutrition Tweaks", "Motivation"].map((t) => (
+                {["Check-in", "Penyesuaian Nutrisi", "Motivasi"].map((t) => (
                   <div key={t} className="flex items-center gap-2 text-xs text-muted-foreground">
                     <CheckCircle size={12} className="text-accent" />
                     {t}
@@ -378,22 +386,22 @@ export default async function PersonalTrainerPage() {
         </div>
           );
         })()}
-      </section>
+      </section></Reveal>
 
       {/* ═══════════════════════════════════════════════
           HOW IT WORKS — large numbered cards + connecting line
       ═══════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden py-24">
+      <Reveal><section className="relative overflow-hidden py-24">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/15 to-transparent" />
         <div className="hologram-lines absolute inset-0 opacity-[0.07]" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-xs font-bold text-primary uppercase tracking-widest mb-3">
-              Simple process
+              Proses sederhana
             </p>
             <h2 className="text-4xl lg:text-5xl font-black">
-              How It <span className="gradient-text">Works</span>
+              Cara <span className="gradient-text">Kerjanya</span>
             </h2>
           </div>
 
@@ -430,143 +438,143 @@ export default async function PersonalTrainerPage() {
             })}
           </div>
         </div>
-      </section>
+      </section></Reveal>
 
       {/* ═══════════════════════════════════════════════
           OUR PERSONAL TRAINERS — inline custom cards
       ═══════════════════════════════════════════════ */}
-      <section id="trainers" className="max-w-7xl mx-auto px-6 py-24">
+      <Reveal><section id="trainers" className="max-w-7xl mx-auto px-6 py-24">
         <div className="mb-12">
           <p className="text-xs font-bold text-primary uppercase tracking-widest mb-3">
-            Expert coaches
+            Coach ahli
           </p>
           <h2 className="text-4xl lg:text-5xl font-black">
-            Our <span className="gradient-text">Personal Trainers</span>
+            Personal Trainer <span className="gradient-text">Kami</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-lg leading-relaxed">
-            Every one of our PTs holds professional certifications and a proven
-            track record of client results.
+            Setiap PT kami memegang sertifikasi profesional dan rekam jejak
+            hasil klien yang terbukti.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pts.map((pt, i) => (
-            <div
-              key={pt.id}
-              className="group relative glass rounded-2xl overflow-hidden border border-border/20 hover:border-primary/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10"
-            >
-              {/* Top gradient band */}
-              <div
-                className={`h-2 w-full bg-gradient-to-r ${
-                  i % 2 === 0
-                    ? "from-primary/80 to-accent/80"
-                    : "from-accent/80 to-primary/80"
-                }`}
-              />
-
-              <div className="p-6">
-                {/* Avatar + name row */}
-                <div className="flex items-center gap-4 mb-6">
-                  {/* Large monogram circle */}
-                  <div
-                    className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${
-                      INITIALS_GRADIENTS[i % INITIALS_GRADIENTS.length]
-                    } flex items-center justify-center shrink-0 shadow-lg`}
-                  >
-                    <span className="text-3xl font-black text-white/90 select-none">
-                      {getInitials(pt.name)}
+        {/* Editorial alternating spread — each trainer is a full profile moment, not a card in a grid */}
+        <div className="space-y-6">
+          {pts.map((pt, i) => {
+            const isReversed = i % 2 === 1;
+            return (
+              <Reveal key={pt.id} index={i} staggerMs={80}>
+                <div
+                  className={`group flex flex-col ${isReversed ? "md:flex-row-reverse" : "md:flex-row"} rounded-3xl overflow-hidden border border-white/10 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_20px_60px_hsl(195_100%_50%/0.12)]`}
+                >
+                  {/* Photo panel */}
+                  <div className="relative md:w-2/5 min-h-64 md:min-h-80 overflow-hidden shrink-0">
+                    {pt.imageUrl ? (
+                      <Image
+                        src={pt.imageUrl}
+                        alt={pt.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className={`w-full h-full bg-gradient-to-br ${INITIALS_GRADIENTS[i % INITIALS_GRADIENTS.length]} flex items-center justify-center`}>
+                        <span className="text-8xl font-black text-white/20 select-none">{getInitials(pt.name)}</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent md:bg-gradient-to-r md:from-black/10 md:via-transparent md:to-transparent" />
+                    <span className="absolute bottom-3 right-4 text-7xl font-black text-white/10 select-none leading-none">
+                      {String(i + 1).padStart(2, "0")}
                     </span>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-black leading-tight group-hover:text-primary transition-colors">
+
+                  {/* Content panel */}
+                  <div className="flex-1 bg-card/60 p-8 md:p-10 flex flex-col justify-center">
+                    <div className="flex flex-wrap items-center gap-3 mb-3">
+                      <div className="glass border border-yellow-500/20 rounded-lg px-3 py-1.5 flex items-center gap-2">
+                        <Award size={12} className="text-yellow-400" />
+                        <span className="text-xs font-semibold text-yellow-300">
+                          {pt.experience} tahun pengalaman
+                        </span>
+                      </div>
+                      {pt.pricePerSession && (
+                        <div className="glass border border-primary/20 rounded-lg px-3 py-1.5">
+                          <span className="text-xs text-muted-foreground">mulai </span>
+                          <span className="text-xs font-black text-primary">
+                            Rp {pt.pricePerSession.toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <h3 className="text-3xl md:text-4xl font-black mb-1 group-hover:text-primary transition-colors duration-300">
                       {pt.name}
                     </h3>
-                    <p className="text-primary text-sm font-medium">{pt.title}</p>
-                    {pt.instagram && (
-                      <a
-                        href={`https://instagram.com/${pt.instagram.replace("@", "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-pink-400 transition-colors mt-1"
-                      >
-                        <Instagram size={10} />
-                        {pt.instagram}
-                      </a>
-                    )}
+                    <p className="text-primary text-sm font-medium mb-4">{pt.title}</p>
+
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {pt.specialties.map((spec) => (
+                        <span
+                          key={spec}
+                          className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-medium"
+                        >
+                          {spec}
+                        </span>
+                      ))}
+                    </div>
+
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 max-w-lg">
+                      {pt.certifications.slice(0, 4).map((cert) => (
+                        <li key={cert} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle size={13} className="text-primary shrink-0" />
+                          {cert}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="flex flex-wrap items-center gap-4">
+                      <MagneticButton>
+                        <Button variant="hero" asChild>
+                          <Link href={`/personal-trainer/book?trainer=${pt.id}`}>
+                            Book Sesi <ArrowRight size={16} />
+                          </Link>
+                        </Button>
+                      </MagneticButton>
+                      {pt.instagram && (
+                        <a
+                          href={`https://instagram.com/${pt.instagram.replace("@", "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-pink-400 transition-colors"
+                        >
+                          <Instagram size={12} />
+                          {pt.instagram}
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* Experience badge */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="glass border border-yellow-500/20 rounded-lg px-3 py-1.5 flex items-center gap-2">
-                    <Award size={12} className="text-yellow-400" />
-                    <span className="text-xs font-semibold text-yellow-300">
-                      {pt.experience} years experience
-                    </span>
-                  </div>
-                  {pt.pricePerSession && (
-                    <div className="glass border border-primary/20 rounded-lg px-3 py-1.5">
-                      <span className="text-xs text-muted-foreground">from </span>
-                      <span className="text-xs font-black text-primary">
-                        Rp {pt.pricePerSession.toLocaleString("id-ID")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Specialties chips */}
-                <div className="flex flex-wrap gap-1.5 mb-5">
-                  {pt.specialties.map((spec) => (
-                    <span
-                      key={spec}
-                      className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-medium"
-                    >
-                      {spec}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Certifications */}
-                <div className="mb-5 pb-5 border-b border-border/20">
-                  {pt.certifications.slice(0, 2).map((cert) => (
-                    <div
-                      key={cert}
-                      className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5"
-                    >
-                      <CheckCircle size={11} className="text-primary/60 shrink-0" />
-                      {cert}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Book CTA */}
-                <Button variant="hero" className="w-full" asChild>
-                  <Link href={`/personal-trainer/book?trainer=${pt.id}`}>
-                    Book a Session <ArrowRight size={16} />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          ))}
+              </Reveal>
+            );
+          })}
         </div>
-      </section>
+      </section></Reveal>
 
       {/* ═══════════════════════════════════════════════
           PACKAGES — asymmetric with Transform as hero
       ═══════════════════════════════════════════════ */}
-      <section id="packages" className="relative overflow-hidden py-24">
+      <Reveal><section id="packages" className="relative overflow-hidden py-24">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/10 to-transparent" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-xs font-bold text-primary uppercase tracking-widest mb-3">
-              Choose your plan
+              Pilih paketmu
             </p>
             <h2 className="text-4xl lg:text-5xl font-black">
-              PT <span className="gradient-text">Packages</span>
+              Paket <span className="gradient-text">PT</span>
             </h2>
             <p className="text-muted-foreground mt-4 max-w-sm mx-auto text-sm">
-              All packages include a free initial consultation.
+              Semua paket sudah termasuk konsultasi awal gratis.
             </p>
           </div>
 
@@ -592,7 +600,7 @@ export default async function PersonalTrainerPage() {
                             {pkg.name}
                           </span>
                           <span className="bg-white/20 backdrop-blur text-white text-[10px] font-black px-3 py-1 rounded-full">
-                            ✦ MOST POPULAR
+                            ✦ PALING POPULER
                           </span>
                         </div>
                         {/* Huge price */}
@@ -601,11 +609,11 @@ export default async function PersonalTrainerPage() {
                             Rp {pkg.price.toLocaleString("id-ID")}
                           </div>
                           <div className="text-white/70 text-sm mt-1">
-                            Rp {pricePerSession.toLocaleString("id-ID")} per session
+                            Rp {pricePerSession.toLocaleString("id-ID")} per sesi
                           </div>
                         </div>
                         <div className="mt-3 text-white/60 text-xs">
-                          {pkg.sessions} sessions · valid {pkg.validDays} days
+                          {pkg.sessions} sesi · berlaku {pkg.validDays} hari
                         </div>
                       </div>
                     </div>
@@ -624,7 +632,7 @@ export default async function PersonalTrainerPage() {
                       </ul>
                       <Button variant="hero" size="lg" className="w-full h-12 text-base" asChild>
                         <Link href={`/personal-trainer/book?package=${pkg.name}`}>
-                          Get Transform <ArrowRight size={18} />
+                          Ambil Transform <ArrowRight size={18} />
                         </Link>
                       </Button>
                     </div>
@@ -642,7 +650,7 @@ export default async function PersonalTrainerPage() {
                     <div className="mb-5">
                       <h3 className="text-lg font-black mb-0.5">{pkg.name}</h3>
                       <p className="text-xs text-muted-foreground">
-                        {pkg.sessions} sessions · valid {pkg.validDays} days
+                        {pkg.sessions} sesi · berlaku {pkg.validDays} hari
                       </p>
                     </div>
 
@@ -652,7 +660,7 @@ export default async function PersonalTrainerPage() {
                         Rp {pkg.price.toLocaleString("id-ID")}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        Rp {pricePerSession.toLocaleString("id-ID")} per session
+                        Rp {pricePerSession.toLocaleString("id-ID")} per sesi
                       </div>
                     </div>
 
@@ -678,18 +686,18 @@ export default async function PersonalTrainerPage() {
 
           {/* Fine print */}
           <p className="text-center text-xs text-muted-foreground mt-8">
-            All prices in IDR. Free 30-minute consultation included with every package.
+            Semua harga dalam Rupiah. Konsultasi gratis 30 menit sudah termasuk di setiap paket.
             <Link href="/contact" className="text-primary ml-1 hover:underline">
-              Questions? Contact us.
+              Ada pertanyaan? Hubungi kami.
             </Link>
           </p>
         </div>
-      </section>
+      </section></Reveal>
 
       {/* ═══════════════════════════════════════════════
           BOTTOM CTA
       ═══════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden py-20">
+      <Reveal><section className="relative overflow-hidden py-20">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-[#0d0820] to-accent/10" />
         <div className="absolute inset-0 hologram-lines opacity-10" />
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -697,29 +705,29 @@ export default async function PersonalTrainerPage() {
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 glass border border-primary/20 text-primary text-xs font-bold px-4 py-2 rounded-full mb-8 uppercase tracking-widest">
             <Zap size={12} />
-            Start Today
+            Mulai Hari Ini
           </div>
           <h2 className="text-4xl lg:text-5xl font-black mb-4">
-            Ready to Transform?
+            Siap Bertransformasi?
           </h2>
           <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
-            Book a free 30-minute consultation with any of our trainers — no
-            commitment, no pressure.
+            Book konsultasi gratis 30 menit dengan trainer manapun — tanpa
+            komitmen, tanpa tekanan.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="hero" size="lg" className="text-base px-10 py-6 h-auto" asChild>
               <Link href="#trainers">
-                Choose a Trainer <ArrowRight size={18} />
+                Pilih Trainer <ArrowRight size={18} />
               </Link>
             </Button>
             <Button variant="glass" size="lg" className="text-base px-10 py-6 h-auto" asChild>
               <Link href="/coaches">
-                View All Coaches
+                Lihat Semua Coach
               </Link>
             </Button>
           </div>
         </div>
-      </section>
+      </section></Reveal>
     </div>
   );
 }

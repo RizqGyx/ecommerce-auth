@@ -2,12 +2,17 @@
 
 import { useState } from "react";
 import { Search, Mail, BookOpen, TrendingUp } from "lucide-react";
-import BlogPostCard, { CATEGORY_EMOJI, CATEGORY_STYLES } from "@/components/molecules/BlogPostCard";
+import BlogPostCard, { CATEGORY_EMOJI, CATEGORY_STYLES, CATEGORY_LABELS } from "@/components/molecules/BlogPostCard";
 import type { toBlogPostData } from "@/lib/serializers";
+import Reveal from "@/components/atoms/Reveal";
 
 const CATEGORIES = ["All", "NEWS", "TIPS", "NUTRITION", "WORKOUT", "EVENTS"];
 
-const POPULAR_TAGS = ["Nutrition", "Recovery", "Strength", "Cardio", "Mindset", "Supplements", "Beginner Tips"];
+function categoryLabel(cat: string) {
+  return cat === "All" ? "Semua" : CATEGORY_LABELS[cat] ?? cat;
+}
+
+const POPULAR_TAGS = ["Nutrisi", "Pemulihan", "Kekuatan", "Kardio", "Mindset", "Suplemen", "Tips Pemula"];
 
 type BlogPostData = ReturnType<typeof toBlogPostData>;
 
@@ -80,19 +85,19 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
             S-One <span className="gradient-text">Journal</span>
           </h1>
           <p className="text-muted-foreground text-lg max-w-xl leading-relaxed mb-8">
-            Fitness insights, member stories, nutrition science, and S-One community news —
-            all curated by our coaches and staff.
+            Insight fitness, cerita member, sains nutrisi, dan berita komunitas S-One —
+            semua dikurasi oleh coach dan staf kami.
           </p>
 
           {/* Stats + category badges row */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 glass rounded-xl px-4 py-2 border border-border/20">
               <BookOpen size={14} className="text-primary" />
-              <span className="text-sm font-semibold">{BLOG_POSTS.length} Articles</span>
+              <span className="text-sm font-semibold">{BLOG_POSTS.length} Artikel</span>
             </div>
             <div className="flex items-center gap-2 glass rounded-xl px-4 py-2 border border-border/20">
               <TrendingUp size={14} className="text-primary" />
-              <span className="text-sm font-semibold">5 Categories</span>
+              <span className="text-sm font-semibold">5 Kategori</span>
             </div>
             <div className="w-px h-6 bg-border/30 hidden sm:block" />
             {["NEWS", "TIPS", "NUTRITION"].map((cat) => (
@@ -101,7 +106,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
                 onClick={() => setActiveCategory(cat)}
                 className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-colors ${CATEGORY_STYLES[cat]}`}
               >
-                {CATEGORY_EMOJI[cat]} {cat}
+                {CATEGORY_EMOJI[cat]} {categoryLabel(cat)}
               </button>
             ))}
           </div>
@@ -110,11 +115,11 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
 
       {/* ─── Featured Article ────────────────────────────────────────────────── */}
       {featured && isUnfiltered && (
-        <section className="max-w-7xl mx-auto px-6 py-10">
+        <Reveal><section className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-1 h-6 rounded-full bg-gradient-to-b from-primary to-accent" />
             <h2 className="text-sm font-black tracking-widest uppercase text-muted-foreground">
-              Featured Article
+              Artikel Unggulan
             </h2>
           </div>
 
@@ -129,14 +134,14 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
               {/* Reading stats */}
               <div className="glass rounded-2xl border border-border/20 p-5">
                 <p className="text-xs font-black tracking-widest uppercase text-muted-foreground mb-4">
-                  Quick Stats
+                  Statistik Singkat
                 </p>
                 <div className="space-y-3">
                   {[
-                    { label: "Total Articles", value: BLOG_POSTS.length, icon: "📝" },
-                    { label: "Avg. Read Time", value: `${Math.round(BLOG_POSTS.reduce((a, b) => a + b.readTime, 0) / BLOG_POSTS.length)} min`, icon: "⏱️" },
-                    { label: "Authors", value: [...new Set(BLOG_POSTS.map((p) => p.author))].length, icon: "✍️" },
-                    { label: "Categories", value: 5, icon: "🏷️" },
+                    { label: "Total Artikel", value: BLOG_POSTS.length, icon: "📝" },
+                    { label: "Rata-rata Baca", value: `${Math.round(BLOG_POSTS.reduce((a, b) => a + b.readTime, 0) / BLOG_POSTS.length)} menit`, icon: "⏱️" },
+                    { label: "Penulis", value: [...new Set(BLOG_POSTS.map((p) => p.author))].length, icon: "✍️" },
+                    { label: "Kategori", value: 5, icon: "🏷️" },
                   ].map((stat) => (
                     <div key={stat.label} className="flex items-center justify-between">
                       <span className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -151,7 +156,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
               {/* Popular tags */}
               <div className="glass rounded-2xl border border-border/20 p-5">
                 <p className="text-xs font-black tracking-widest uppercase text-muted-foreground mb-4">
-                  Popular Topics
+                  Topik Populer
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {POPULAR_TAGS.map((tag) => (
@@ -166,7 +171,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
               </div>
             </div>
           </div>
-        </section>
+        </section></Reveal>
       )}
 
       {/* ─── Category Tab Bar ────────────────────────────────────────────────── */}
@@ -187,7 +192,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
                   }`}
                 >
                   {cat !== "All" && <span>{CATEGORY_EMOJI[cat]}</span>}
-                  {cat}
+                  {categoryLabel(cat)}
                   <span
                     className={`text-[9px] px-1.5 py-0.5 rounded-full font-black ml-0.5 ${
                       isActive
@@ -213,7 +218,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
             />
             <input
               type="text"
-              placeholder="Search articles..."
+              placeholder="Cari artikel..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border/30 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
@@ -227,7 +232,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
         {filtered.length === 0 ? (
           <div className="text-center py-20 text-muted-foreground">
             <div className="text-4xl mb-4">📭</div>
-            <p>No articles found.</p>
+            <p>Tidak ada artikel ditemukan.</p>
           </div>
         ) : (
           <>
@@ -250,7 +255,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
             )}
             {isUnfiltered && gridPosts.length === 0 && (
               <p className="text-center py-10 text-muted-foreground text-sm">
-                All articles are shown above in the featured section.
+                Semua artikel sudah ditampilkan di bagian unggulan di atas.
               </p>
             )}
           </>
@@ -258,7 +263,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
       </section>
 
       {/* ─── Newsletter Banner ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 pt-16 pb-24">
+      <Reveal><section className="max-w-7xl mx-auto px-6 pt-16 pb-24">
         <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-[#0a0a0a] to-accent/10 px-8 py-14">
           {/* Background texture */}
           <div className="absolute inset-0 hologram-lines opacity-10 rounded-3xl" />
@@ -271,14 +276,14 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
             {/* Left */}
             <div className="flex-1 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-primary mb-4 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/5">
-                <Mail size={11} /> Weekly Newsletter
+                <Mail size={11} /> Newsletter Mingguan
               </div>
               <h2 className="text-3xl lg:text-4xl font-black mb-3">
-                Stay <span className="gradient-text">Ahead</span> of the Game
+                Tetap <span className="gradient-text">Selangkah di Depan</span>
               </h2>
               <p className="text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed">
-                Get the latest fitness tips, nutrition guides, class updates, and exclusive
-                member offers — straight to your inbox every week.
+                Dapatkan tips fitness terbaru, panduan nutrisi, update kelas, dan penawaran
+                eksklusif member — langsung ke inbox kamu setiap minggu.
               </p>
             </div>
 
@@ -287,9 +292,9 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
               {subscribed ? (
                 <div className="glass rounded-2xl border border-primary/30 px-6 py-8 text-center">
                   <div className="text-3xl mb-3">🎉</div>
-                  <p className="font-bold text-primary text-sm">You&apos;re subscribed!</p>
+                  <p className="font-bold text-primary text-sm">Kamu sudah berlangganan!</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Check your inbox for a welcome email.
+                    Cek inbox untuk email selamat datang.
                   </p>
                 </div>
               ) : (
@@ -299,7 +304,7 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
                 >
                   <input
                     type="email"
-                    placeholder="Enter your email address"
+                    placeholder="Masukkan alamat emailmu"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -309,17 +314,17 @@ export default function NewsPageClient({ posts: BLOG_POSTS }: { posts: BlogPostD
                     type="submit"
                     className="w-full py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition-opacity"
                   >
-                    Subscribe for Free
+                    Langganan Gratis
                   </button>
                   <p className="text-[10px] text-center text-muted-foreground">
-                    No spam. Unsubscribe anytime.
+                    Tanpa spam. Berhenti berlangganan kapan saja.
                   </p>
                 </form>
               )}
             </div>
           </div>
         </div>
-      </section>
+      </section></Reveal>
     </div>
   );
 }

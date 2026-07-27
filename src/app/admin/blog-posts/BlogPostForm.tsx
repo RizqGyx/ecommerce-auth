@@ -51,11 +51,11 @@ export default function BlogPostForm({ action, post }: BlogPostFormProps) {
         <div>
           <Label htmlFor="category">Kategori</Label>
           <Select id="category" name="category" defaultValue={post?.category ?? "NEWS"} required>
-            <option value="NEWS">News</option>
+            <option value="NEWS">Berita</option>
             <option value="TIPS">Tips</option>
-            <option value="NUTRITION">Nutrition</option>
-            <option value="WORKOUT">Workout</option>
-            <option value="EVENTS">Events</option>
+            <option value="NUTRITION">Nutrisi</option>
+            <option value="WORKOUT">Latihan</option>
+            <option value="EVENTS">Acara</option>
           </Select>
         </div>
         <div>

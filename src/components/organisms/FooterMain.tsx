@@ -5,29 +5,29 @@ import Link from "next/link";
 import ContactInfo from "@/components/molecules/FooterContactInfo";
 
 const footerLinks: Record<string, Array<{ label: string; href: string }>> = {
-  Programs: [
+  Program: [
     { label: "Personal Training", href: "/personal-trainer" },
-    { label: "Group Classes", href: "/classes" },
-    { label: "Class Schedule", href: "/schedule" },
-    { label: "Coaches", href: "/coaches" },
+    { label: "Kelas Grup", href: "/classes" },
+    { label: "Jadwal Kelas", href: "/schedule" },
+    { label: "Coach", href: "/coaches" },
   ],
-  Explore: [
+  Jelajahi: [
     { label: "Shop", href: "/shop" },
-    { label: "News & Tips", href: "/news" },
-    { label: "About S-One", href: "/about" },
-    { label: "Membership Plans", href: "/membership" },
+    { label: "Berita & Tips", href: "/news" },
+    { label: "Galeri", href: "/gallery" },
+    { label: "Tentang S-One", href: "/about" },
   ],
   Membership: [
-    { label: "Starter Plan", href: "/membership" },
-    { label: "Premium Plan", href: "/membership" },
-    { label: "Elite Plan", href: "/membership" },
-    { label: "Join Now", href: "/register" },
+    { label: "Paket Membership", href: "/membership" },
+    { label: "Testimoni", href: "/testimonials" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Gabung Sekarang", href: "/register" },
   ],
-  Account: [
-    { label: "My Dashboard", href: "/dashboard" },
-    { label: "Sign In", href: "/login" },
-    { label: "Create Account", href: "/register" },
-    { label: "Contact Us", href: "/about" },
+  Akun: [
+    { label: "Dashboard Saya", href: "/dashboard" },
+    { label: "Masuk", href: "/login" },
+    { label: "Buat Akun", href: "/register" },
+    { label: "Hubungi Kami", href: "/contact" },
   ],
 };
 
@@ -47,8 +47,8 @@ const FooterMain = () => (
         </div>
       </div>
       <p className="text-muted-foreground mb-6 leading-relaxed">
-        Experience the future of fitness with cutting-edge technology, expert
-        training, and a community that pushes your limits every day.
+        Rasakan masa depan fitness dengan teknologi mutakhir, pelatihan ahli,
+        dan komunitas yang mendorong batasmu setiap hari.
       </p>
       <ContactInfo />
     </div>

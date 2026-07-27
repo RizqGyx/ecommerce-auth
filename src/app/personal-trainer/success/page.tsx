@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle, Dumbbell, User, Package2, ArrowRight } from "lucide-react";
+import { Dumbbell, User, Package2, ArrowRight, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import PtReviewPrompt from "@/components/organisms/PtReviewPrompt";
+import CelebrationBurst from "@/components/atoms/CelebrationBurst";
 
 export default async function PTSuccessPage({
   searchParams,
@@ -29,14 +30,16 @@ export default async function PTSuccessPage({
   return (
     <div className="min-h-screen pt-20 flex items-center justify-center px-6 pb-16">
       <div className="max-w-md w-full text-center">
+        {/* Success icon — your trainer partnership is locked in, high-energy feel */}
         <div className="relative mb-6 inline-block">
-          <div className="w-24 h-24 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center mx-auto">
-            <CheckCircle size={48} className="text-primary" />
+          <CelebrationBurst colors={["#facc15", "#7c3aed", "#00b8ff"]} />
+          <div className="relative w-24 h-24 rounded-full bg-yellow-400/10 border-2 border-yellow-400/40 flex items-center justify-center mx-auto animate-success-pop">
+            <Flame size={44} className="text-yellow-400" />
           </div>
-          <div className="absolute inset-0 rounded-full animate-ping bg-primary/5" />
+          <div className="absolute inset-0 rounded-full animate-ping bg-yellow-400/5" />
         </div>
 
-        <h1 className="text-3xl font-black mb-2">Booking PT Berhasil! 🎉</h1>
+        <h1 className="text-3xl font-black mb-2">Trainer-mu Siap! 🔥</h1>
         <p className="text-muted-foreground mb-8">
           Paket <strong className="text-foreground">{booking.packageName}</strong> bersama{" "}
           <strong className="text-foreground">{booking.coach.name}</strong> telah aktif.

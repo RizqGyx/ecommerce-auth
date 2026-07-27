@@ -8,15 +8,40 @@ interface Props {
   features: string[];
   featureIcon?: "dot" | "check";
   extra?: React.ReactNode;
+  /** "focused" (Login — quiet, single accent) vs "ambitious" (Register — bigger, accent-forward glow) */
+  mood?: "focused" | "ambitious";
+  /** Mirrors the gradient/glow so the panel can sit on either side of the form. */
+  mirrored?: boolean;
 }
 
-const AuthBrandingPanel = ({ heading, subheading, features, featureIcon = "dot", extra }: Props) => (
+const AuthBrandingPanel = ({
+  heading,
+  subheading,
+  features,
+  featureIcon = "dot",
+  extra,
+  mood = "focused",
+  mirrored = false,
+}: Props) => (
   <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-background">
     <Image src="/Hero.png" alt="S-One Gym" fill className="object-cover opacity-40" priority />
-    <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
+    <div
+      className={`absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent ${
+        mirrored ? "lg:bg-gradient-to-l" : ""
+      }`}
+    />
     <div className="absolute inset-0 hologram-lines opacity-30" />
-    <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
-    <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
+    {mood === "ambitious" ? (
+      <>
+        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-accent/25 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-primary/15 rounded-full blur-3xl" />
+      </>
+    ) : (
+      <>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
+      </>
+    )}
 
     <div className="relative z-10 flex flex-col justify-between p-12 w-full">
       <Link href="/" className="flex items-center gap-3">

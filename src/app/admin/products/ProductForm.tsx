@@ -62,7 +62,7 @@ export default function ProductForm({ action, categories, product }: ProductForm
 
       <div>
         <Label htmlFor="badge">Badge (opsional)</Label>
-        <Input id="badge" name="badge" placeholder="Best Seller, Sale, New..." defaultValue={product?.badge ?? ""} />
+        <Input id="badge" name="badge" placeholder="Terlaris, Diskon, Baru..." defaultValue={product?.badge ?? ""} />
       </div>
 
       <div>

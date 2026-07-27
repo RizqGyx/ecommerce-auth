@@ -1,5 +1,6 @@
 import { STATS } from "@/lib/data";
 import { TrendingUp } from "lucide-react";
+import AnimatedCounter from "@/components/atoms/motion/AnimatedCounter";
 
 const StatsSection = () => {
   return (
@@ -31,9 +32,7 @@ const StatsSection = () => {
 
                 <div className="relative p-6 text-center">
                   <div className="text-4xl mb-3">{stat.icon}</div>
-                  <div className="text-3xl lg:text-4xl font-black gradient-text mb-1 animate-count-up">
-                    {stat.value}
-                  </div>
+                  <AnimatedCounter value={stat.value} className="text-3xl lg:text-4xl font-black gradient-text mb-1 block" />
                   <div className="text-xs text-muted-foreground font-semibold tracking-widest uppercase">
                     {stat.label}
                   </div>
@@ -45,7 +44,7 @@ const StatsSection = () => {
 
         {/* Trust bar */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-          {["Berdiri sejak 2017", "ISO 9001 Certified", "Top 10 Gym Jakarta 2024", "5★ Google Reviews"].map((item) => (
+          {["Berdiri sejak 2017", "ISO 9001 Certified", "Top 10 Gym Bukittinggi 2024", "5★ Google Reviews"].map((item) => (
             <span key={item} className="flex items-center gap-1.5">
               <span className="w-1 h-1 rounded-full bg-primary/60" /> {item}
             </span>

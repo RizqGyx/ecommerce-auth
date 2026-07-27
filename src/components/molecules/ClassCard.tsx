@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Clock, ArrowRight, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -39,14 +40,19 @@ const ClassCard = ({ cls, variant = "compact", className }: ClassCardProps) => {
         className={`absolute inset-0 bg-gradient-to-br ${cls.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
       />
 
-      {/* Full variant: visual icon header */}
+      {/* Full variant: real photo header */}
       {variant === "full" && (
-        <div
-          className={`relative h-36 bg-gradient-to-br ${cls.color} flex items-center justify-center overflow-hidden`}
-          style={{ opacity: 0.12 }}
-        >
-          <div className={`absolute inset-0 bg-gradient-to-br ${cls.color}`} style={{ opacity: 1 }} />
-          <span className="relative text-7xl group-hover:scale-110 transition-transform duration-300 select-none">
+        <div className="relative h-36 overflow-hidden">
+          <Image
+            src={`/classes/${cls.slug}.jpg`}
+            alt={cls.name}
+            fill
+            sizes="(max-width: 640px) 100vw, 400px"
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+          <div className={`absolute inset-0 bg-gradient-to-br ${cls.color} opacity-40 mix-blend-overlay`} />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
+          <span className="absolute bottom-2 right-3 text-3xl opacity-80 select-none drop-shadow-lg">
             {cls.icon}
           </span>
         </div>
@@ -87,13 +93,13 @@ const ClassCard = ({ cls, variant = "compact", className }: ClassCardProps) => {
         <div className="flex items-center justify-between pt-4 border-t border-border/20">
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Clock size={14} />
-            <span className="text-xs">{cls.duration} min</span>
+            <span className="text-xs">{cls.duration} menit</span>
           </div>
           {variant === "compact" ? (
             <div
               className={`flex items-center gap-1 text-xs font-semibold ${cls.colorSolid} group-hover:gap-2 transition-all duration-300`}
             >
-              Book Now <ArrowRight size={12} />
+              Book Sekarang <ArrowRight size={12} />
             </div>
           ) : (
             <Button variant="neon" size="sm" asChild>

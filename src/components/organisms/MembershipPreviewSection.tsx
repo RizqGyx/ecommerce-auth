@@ -16,9 +16,9 @@ const MembershipPreviewSection = async () => {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <SectionHeader
-          badge="Membership Plans"
-          title={<>Choose Your <span className="gradient-text">Path</span></>}
-          subtitle="No long-term contracts. Cancel anytime. Start your transformation today."
+          badge="Paket Membership"
+          title={<>Pilih <span className="gradient-text">Jalanmu</span></>}
+          subtitle="Tanpa kontrak jangka panjang. Batalkan kapan saja. Mulai transformasimu hari ini."
           className="mb-16"
         />
 
@@ -38,7 +38,7 @@ const MembershipPreviewSection = async () => {
             href="/membership"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
           >
-            Compare all features in detail <ArrowRight size={14} />
+            Bandingkan semua fitur secara detail <ArrowRight size={14} />
           </Link>
         </div>
       </div>

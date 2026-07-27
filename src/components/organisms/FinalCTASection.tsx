@@ -1,11 +1,20 @@
 import Link from "next/link";
 import { Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import MagneticButton from "@/components/atoms/motion/MagneticButton";
+import ParallaxImage from "@/components/atoms/motion/ParallaxImage";
 
 const FinalCTASection = () => {
   return (
     <section className="relative py-32 overflow-hidden">
       {/* Background */}
+      <ParallaxImage
+        src="/gym/boxing-ring.jpg"
+        alt=""
+        wrapperClassName="absolute inset-0 opacity-[0.14]"
+        strength={50}
+        sizes="100vw"
+      />
       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-background to-accent/10"></div>
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
       <div className="absolute inset-0 hologram-lines opacity-20"></div>
@@ -18,31 +27,33 @@ const FinalCTASection = () => {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-primary mb-6 px-4 py-2 rounded-full border border-primary/30 bg-primary/5">
           <Zap size={12} fill="currentColor" />
-          Start Today
+          Mulai Hari Ini
         </div>
 
         {/* Headline */}
         <h2 className="text-4xl lg:text-6xl font-black mb-6 leading-tight">
-          Your Best Self is{" "}
-          <span className="gradient-text">Waiting</span>
+          Versi Terbaikmu{" "}
+          <span className="gradient-text">Sudah Menunggu</span>
         </h2>
 
         <p className="text-muted-foreground text-lg lg:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-          Join thousands of members who have already transformed their bodies and minds at S-One Gym Bukittinggi.
-          First week is on us.
+          Bergabunglah dengan ribuan member yang telah mentransformasi tubuh dan pikiran mereka di S-One Gym Bukittinggi.
+          Minggu pertama gratis dari kami.
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button variant="hero" size="lg" className="text-base px-10 py-6 h-auto" asChild>
-            <Link href="/membership">
-              <Zap size={18} />
-              Join Now — Free First Week
-            </Link>
-          </Button>
+          <MagneticButton>
+            <Button variant="hero" size="lg" className="text-base px-10 py-6 h-auto" asChild>
+              <Link href="/membership">
+                <Zap size={18} />
+                Gabung Sekarang — Minggu Pertama Gratis
+              </Link>
+            </Button>
+          </MagneticButton>
           <Button variant="glass" size="lg" className="text-base px-10 py-6 h-auto" asChild>
             <Link href="/schedule">
-              View Schedule <ArrowRight size={18} />
+              Lihat Jadwal <ArrowRight size={18} />
             </Link>
           </Button>
         </div>
@@ -51,19 +62,19 @@ const FinalCTASection = () => {
         <div className="flex flex-wrap items-center justify-center gap-6 mt-10 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
-            No contracts
+            Tanpa kontrak
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-            Cancel anytime
+            Batalkan kapan saja
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-            Free first week
+            Minggu pertama gratis
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
-            2,000+ happy members
+            2.000+ member senang
           </span>
         </div>
       </div>

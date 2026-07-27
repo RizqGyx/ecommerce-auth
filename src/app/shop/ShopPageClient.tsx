@@ -1,17 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
-import { ShoppingCart, Search, Star, Zap } from "lucide-react";
+import Image from "next/image";
+import { ShoppingCart, Search, Star, Zap, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import ProductCard, { type ProductData } from "@/components/molecules/ProductCard";
 import { useCart } from "@/context/CartContext";
+import Reveal from "@/components/atoms/Reveal";
+
+const CATEGORY_META: Record<string, { icon: string; label: string }> = {
+  Supplements: { icon: "💊", label: "Suplemen" },
+  Food: { icon: "🥗", label: "Makanan & Camilan" },
+  Merchandise: { icon: "👕", label: "Merchandise" },
+  Equipment: { icon: "🏋️", label: "Peralatan" },
+};
+
+function Shelf({
+  category,
+  products,
+  onAddToCart,
+  onSeeAll,
+}: {
+  category: string;
+  products: ProductData[];
+  onAddToCart: (p: ProductData) => void;
+  onSeeAll: () => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const meta = CATEGORY_META[category] ?? { icon: "🛍️", label: category };
+
+  const scrollBy = (dir: 1 | -1) => {
+    scrollRef.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
+  };
+
+  if (products.length === 0) return null;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{meta.icon}</span>
+          <h2 className="text-lg font-black tracking-tight">{meta.label}</h2>
+          <span className="text-xs text-muted-foreground">{products.length} produk</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onSeeAll}
+            className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+          >
+            Lihat semua <ArrowRight size={12} />
+          </button>
+          <div className="hidden sm:flex items-center gap-1.5 ml-2">
+            <button
+              onClick={() => scrollBy(-1)}
+              className="w-8 h-8 rounded-full glass border border-border/20 flex items-center justify-center hover:border-primary/40 transition-colors"
+              aria-label="Scroll kiri"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <button
+              onClick={() => scrollBy(1)}
+              className="w-8 h-8 rounded-full glass border border-border/20 flex items-center justify-center hover:border-primary/40 transition-colors"
+              aria-label="Scroll kanan"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 sm:mx-0 sm:px-0"
+      >
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            className="w-64 sm:w-72 shrink-0 snap-start"
+            onAddToCart={() => onAddToCart(product)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const CATEGORIES = [
-  { name: "All", icon: "🛍️", key: "All" },
-  { name: "Supplements", icon: "💊", key: "Supplements" },
-  { name: "Food", icon: "🥗", key: "Food" },
+  { name: "Semua", icon: "🛍️", key: "All" },
+  { name: "Suplemen", icon: "💊", key: "Supplements" },
+  { name: "Makanan", icon: "🥗", key: "Food" },
   { name: "Merch", icon: "👕", key: "Merchandise" },
-  { name: "Equipment", icon: "🏋️", key: "Equipment" },
+  { name: "Peralatan", icon: "🏋️", key: "Equipment" },
 ];
 
 const MARQUEE_ITEMS = [
@@ -32,7 +112,7 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
   const [search, setSearch] = useState("");
   const { addItem, totalItems } = useCart();
 
-  const bestSellers = products.filter((p) => p.badge === "Best Seller" || p.rating >= 4.8);
+  const bestSellers = products.filter((p) => p.badge === "Terlaris" || p.rating >= 4.8);
 
   const filtered = products.filter(
     (p) =>
@@ -45,6 +125,11 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
 
   const categoryCount = (key: string) =>
     key === "All" ? products.length : products.filter((p) => p.category === key).length;
+
+  const isShelfView = activeCategory === "All" && search === "";
+
+  const handleAddToCart = (p: ProductData) =>
+    addItem({ id: p.id, name: p.name, price: p.price, category: p.category, badge: p.badge });
 
   return (
     <div className="min-h-screen pt-20">
@@ -69,8 +154,8 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
                 <span className="gradient-text">Store</span>
               </h1>
               <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-md">
-                Supplements, gear, and exclusive S-One merchandise — everything you need
-                to train harder, recover faster, and look the part.
+                Suplemen, alat, dan merchandise eksklusif S-One — semua yang kamu butuhkan
+                untuk latihan lebih keras, pulih lebih cepat, dan tampil maksimal.
               </p>
               <div className="flex items-center gap-4 flex-wrap">
                 <Link
@@ -79,12 +164,12 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
                 >
                   <ShoppingCart size={18} className="text-primary" />
                   <span className="text-sm font-semibold">
-                    {totalItems} item in cart
+                    {totalItems} item di keranjang
                   </span>
                 </Link>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                  <span>{products.length} products &bull; {CATEGORIES.length - 1} categories</span>
+                  <span>{products.length} produk &bull; {CATEGORIES.length - 1} kategori</span>
                 </div>
               </div>
             </div>
@@ -97,8 +182,12 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
                   style={{ transform: `translateX(${i % 2 === 0 ? "0" : "-2rem"})` }}
                   className="glass rounded-2xl border border-primary/20 px-5 py-4 flex items-center gap-4 min-w-64 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center text-xl shrink-0">
-                    {p.category === "Supplements" ? "💊" : p.category === "Equipment" ? "🏋️" : "👕"}
+                  <div className="relative w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center text-xl shrink-0 overflow-hidden">
+                    {p.imageUrl ? (
+                      <Image src={p.imageUrl} alt={p.name} fill sizes="40px" className="object-cover" />
+                    ) : (
+                      p.category === "Supplements" ? "💊" : p.category === "Equipment" ? "🏋️" : "👕"
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-foreground truncate">{p.name}</p>
@@ -164,7 +253,7 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
                       : "bg-muted/50 text-muted-foreground"
                   }`}
                 >
-                  {categoryCount(cat.key)} items
+                  {categoryCount(cat.key)} produk
                 </span>
                 {isActive && (
                   <div className="absolute inset-0 rounded-2xl ring-1 ring-primary/40 pointer-events-none" />
@@ -181,9 +270,9 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
           <div className="flex items-center gap-3 mb-5">
             <div className="w-1 h-6 rounded-full bg-gradient-to-b from-yellow-400 to-primary" />
             <h2 className="text-lg font-black tracking-tight">
-              Best <span className="gradient-text">Sellers</span>
+              Produk <span className="gradient-text">Terlaris</span>
             </h2>
-            <span className="text-xs text-muted-foreground ml-2">Most loved by our members</span>
+            <span className="text-xs text-muted-foreground ml-2">Paling disukai member kami</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {bestSellers.map((p) => (
@@ -191,18 +280,31 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
                 key={p.id}
                 className="glass rounded-2xl border border-yellow-400/20 hover:border-yellow-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-400/5 overflow-hidden group"
               >
-                <div className="relative h-28 bg-gradient-to-br from-yellow-900/20 to-primary/10 flex items-center justify-center">
-                  <span className="text-5xl opacity-30 group-hover:scale-110 transition-transform duration-300">
-                    {p.category === "Supplements"
-                      ? "💊"
-                      : p.category === "Equipment"
-                      ? "🏋️"
-                      : p.category === "Food"
-                      ? "🥗"
-                      : "👕"}
-                  </span>
-                  <div className="absolute top-2 left-2 flex items-center gap-1 bg-yellow-400/90 text-black text-[9px] font-black px-2 py-0.5 rounded-full">
-                    <Star size={8} className="fill-black" /> Best Seller
+                <div className="relative h-28 bg-gradient-to-br from-yellow-900/20 to-primary/10 flex items-center justify-center overflow-hidden">
+                  {p.imageUrl ? (
+                    <>
+                      <Image
+                        src={p.imageUrl}
+                        alt={p.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+                    </>
+                  ) : (
+                    <span className="text-5xl opacity-30 group-hover:scale-110 transition-transform duration-300">
+                      {p.category === "Supplements"
+                        ? "💊"
+                        : p.category === "Equipment"
+                        ? "🏋️"
+                        : p.category === "Food"
+                        ? "🥗"
+                        : "👕"}
+                    </span>
+                  )}
+                  <div className="absolute top-2 left-2 z-10 flex items-center gap-1 bg-yellow-400/90 text-black text-[9px] font-black px-2 py-0.5 rounded-full">
+                    <Star size={8} className="fill-black" /> Terlaris
                   </div>
                 </div>
                 <div className="p-3 flex items-center justify-between gap-2">
@@ -226,7 +328,7 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
                     }
                     className="shrink-0 text-[10px] font-bold px-3 py-1.5 rounded-lg bg-primary/15 text-primary border border-primary/30 hover:bg-primary/30 transition-colors"
                   >
-                    + Add
+                    + Tambah
                   </button>
                 </div>
               </div>
@@ -244,7 +346,7 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
           />
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Cari produk..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-border/30 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
@@ -252,27 +354,37 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
         </div>
       </section>
 
-      {/* ─── Product Grid ─────────────────────────────────────────────────────── */}
+      {/* ─── Catalog: shelf-by-category when browsing, focused grid when filtered ── */}
       <section className="max-w-7xl mx-auto px-6 pt-6 pb-24">
         {filtered.length === 0 ? (
           <div className="text-center py-20 text-muted-foreground">
             <div className="text-4xl mb-4">🔍</div>
-            <p>No products found for &quot;{search}&quot;</p>
+            <p>Tidak ada produk yang ditemukan untuk &quot;{search}&quot;</p>
+          </div>
+        ) : isShelfView ? (
+          <div className="space-y-14">
+            {Object.keys(CATEGORY_META).map((cat) => (
+              <Shelf
+                key={cat}
+                category={cat}
+                products={products.filter((p) => p.category === cat)}
+                onAddToCart={handleAddToCart}
+                onSeeAll={() => setActiveCategory(cat)}
+              />
+            ))}
           </div>
         ) : (
           <>
-            {filtered.length > 0 && (
-              <div className="flex items-center gap-2 mb-6">
-                <span className="text-sm text-muted-foreground">
-                  Showing <strong className="text-foreground">{filtered.length}</strong> products
+            <div className="flex items-center gap-2 mb-6">
+              <span className="text-sm text-muted-foreground">
+                Showing <strong className="text-foreground">{filtered.length}</strong> products
+              </span>
+              {activeCategory !== "All" && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  {activeCategory}
                 </span>
-                {activeCategory !== "All" && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                    {activeCategory}
-                  </span>
-                )}
-              </div>
-            )}
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {/* First card: featured (spans 2 cols on large screens) */}
               {featuredProduct && (
@@ -280,31 +392,11 @@ export default function ShopPageClient({ products }: { products: ProductData[] }
                   key={featuredProduct.id}
                   product={featuredProduct}
                   className="lg:col-span-2 xl:col-span-2"
-                  onAddToCart={() =>
-                    addItem({
-                      id: featuredProduct.id,
-                      name: featuredProduct.name,
-                      price: featuredProduct.price,
-                      category: featuredProduct.category,
-                      badge: featuredProduct.badge,
-                    })
-                  }
+                  onAddToCart={() => handleAddToCart(featuredProduct)}
                 />
               )}
               {restProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={() =>
-                    addItem({
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      category: product.category,
-                      badge: product.badge,
-                    })
-                  }
-                />
+                <ProductCard key={product.id} product={product} onAddToCart={() => handleAddToCart(product)} />
               ))}
             </div>
           </>

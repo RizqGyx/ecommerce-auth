@@ -3,6 +3,7 @@ import { ArrowRight, Calendar, Tag, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import { toBlogPostData } from "@/lib/serializers";
+import { CATEGORY_LABELS } from "@/components/molecules/BlogPostCard";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
@@ -27,14 +28,14 @@ const NewsPreviewSection = async () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
             <span className="text-xs font-bold tracking-widest uppercase text-primary mb-3 block">
-              Latest News
+              Berita Terbaru
             </span>
             <h2 className="text-4xl lg:text-5xl font-black">
-              Stay <span className="gradient-text">Updated</span>
+              Tetap <span className="gradient-text">Update</span>
             </h2>
           </div>
           <Button variant="neon" size="sm" className="shrink-0 self-start md:self-auto" asChild>
-            <Link href="/news">All Articles <ArrowRight size={16} className="ml-1" /></Link>
+            <Link href="/news">Semua Artikel <ArrowRight size={16} className="ml-1" /></Link>
           </Button>
         </div>
 
@@ -53,7 +54,7 @@ const NewsPreviewSection = async () => {
               {/* Category badge */}
               <div className="absolute top-5 left-5">
                 <span className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground">
-                  <Tag size={10} /> {featured.category}
+                  <Tag size={10} /> {CATEGORY_LABELS[featured.category] ?? featured.category}
                 </span>
               </div>
 
@@ -69,7 +70,7 @@ const NewsPreviewSection = async () => {
                   <Calendar size={11} /> {formatDate(featured.publishedAt)}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Clock size={11} /> {featured.readTime} min read
+                  <Clock size={11} /> {featured.readTime} menit baca
                 </span>
               </div>
               <h3 className="text-2xl font-black mb-3 group-hover:text-primary transition-colors duration-300 leading-tight">
@@ -98,7 +99,7 @@ const NewsPreviewSection = async () => {
                     0{idx + 2}
                   </span>
                   <span className="absolute text-xs font-bold text-primary">
-                    {post.category?.slice(0, 3).toUpperCase()}
+                    {(CATEGORY_LABELS[post.category] ?? post.category)?.slice(0, 3).toUpperCase()}
                   </span>
                 </div>
 
@@ -129,7 +130,7 @@ const NewsPreviewSection = async () => {
                     className="flex-1 min-w-0 text-xs bg-background/50 border border-border/30 rounded-lg px-3 py-2 outline-none focus:border-primary/50"
                   />
                   <Button variant="neon" size="sm" className="text-xs px-3">
-                    OK
+                    Kirim
                   </Button>
                 </div>
               </div>

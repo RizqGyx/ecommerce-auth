@@ -22,7 +22,7 @@ const UpcomingClassesWidget = ({ classes }: Props) => {
     <div className="glass rounded-2xl border border-border/20 overflow-hidden">
       <div className="flex items-center justify-between p-5 pb-0">
         <div className="flex items-center gap-2">
-          <h3 className="font-bold">Upcoming Classes</h3>
+          <h3 className="font-bold">Kelas Mendatang</h3>
           {classes.length > 0 && (
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
               {classes.length} terjadwal
@@ -30,7 +30,7 @@ const UpcomingClassesWidget = ({ classes }: Props) => {
           )}
         </div>
         <Link href="/schedule" className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1">
-          View all <ChevronRight size={12} />
+          Lihat semua <ChevronRight size={12} />
         </Link>
       </div>
 
@@ -62,7 +62,7 @@ const UpcomingClassesWidget = ({ classes }: Props) => {
               </div>
               <div className="text-right shrink-0 hidden sm:block">
                 <div className="text-xs font-bold text-white">{next.date}</div>
-                <div className="text-[10px] text-white/70">with {next.coach}</div>
+                <div className="text-[10px] text-white/70">bersama {next.coach}</div>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@ const UpcomingClassesWidget = ({ classes }: Props) => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-sm">{cls.class}</div>
-                <div className="text-xs text-muted-foreground truncate">with {cls.coach} · {cls.room}</div>
+                <div className="text-xs text-muted-foreground truncate">bersama {cls.coach} · {cls.room}</div>
               </div>
               <div className="text-right shrink-0">
                 <div className="text-xs font-semibold">{cls.time}</div>

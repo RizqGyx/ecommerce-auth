@@ -26,15 +26,15 @@ export const HeroContent = () => (
     />
 
     <Heading>
-      <span>Transform Your</span>
-      <GradientText> Body </GradientText>
-      <span>Unlock Your</span>
-      <GradientText> Potential</GradientText>
+      <span>Transformasi</span>
+      <GradientText> Tubuhmu </GradientText>
+      <span>Wujudkan</span>
+      <GradientText> Potensimu</GradientText>
     </Heading>
 
     <Subtitle>
-      Experience the future of fitness with cutting-edge technology, expert
-      training, and a community that pushes your limits.
+      Rasakan masa depan fitness dengan teknologi mutakhir, pelatihan ahli,
+      dan komunitas yang mendorong batasmu.
     </Subtitle>
 
     <CTAButtons />

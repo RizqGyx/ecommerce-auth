@@ -5,24 +5,24 @@ import { ChevronDown } from "lucide-react";
 
 const FAQS = [
   {
-    q: "Can I cancel anytime?",
-    a: "Yes. There are no lock-in contracts. Cancel online or at the gym, effective the end of your current billing month.",
+    q: "Bisakah saya membatalkan kapan saja?",
+    a: "Bisa. Tidak ada kontrak mengikat. Batalkan secara online atau langsung di gym, berlaku efektif di akhir bulan tagihan berjalan.",
   },
   {
-    q: "What payment methods do you accept?",
-    a: "We accept bank transfer, GoPay, OVO, DANA, ShopeePay, and all major credit/debit cards.",
+    q: "Metode pembayaran apa saja yang diterima?",
+    a: "Kami menerima transfer bank, GoPay, OVO, DANA, ShopeePay, dan semua kartu kredit/debit utama.",
   },
   {
-    q: "Can I freeze my membership?",
-    a: "Yes, Premium and Elite members can freeze their membership for up to 1 month per year at no charge.",
+    q: "Bisakah saya membekukan membership saya?",
+    a: "Bisa, member Premium dan Elite dapat membekukan membership hingga 1 bulan per tahun tanpa biaya tambahan.",
   },
   {
-    q: "How does the QR code access work?",
-    a: "After signing up, you'll receive a digital member card in your app with a unique QR code. Just scan it at the entrance gate to access the gym.",
+    q: "Bagaimana cara kerja akses QR code?",
+    a: "Setelah mendaftar, kamu akan mendapatkan kartu member digital di aplikasi dengan QR code unik. Tinggal scan di gerbang masuk untuk mengakses gym.",
   },
   {
-    q: "Can I upgrade my plan?",
-    a: "Absolutely. Upgrade anytime from your account dashboard. The price difference is prorated for the current month.",
+    q: "Bisakah saya upgrade paket saya?",
+    a: "Tentu saja. Upgrade kapan saja dari dashboard akunmu. Selisih harga dihitung prorata untuk bulan berjalan.",
   },
 ];
 

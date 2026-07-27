@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { ArrowLeft, User, Bell, Lock, Shield, ChevronRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/molecules/ConfirmDialog";
 import { updateProfile, changePassword, deleteAccount } from "./actions";
+import Reveal from "@/components/atoms/Reveal";
 
 interface Props {
   user: {
@@ -88,7 +90,6 @@ export default function SettingsPageClient({ user }: Props) {
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Yakin ingin menghapus akun? Tindakan ini permanen dan tidak dapat dibatalkan.")) return;
     setDeleting(true);
     await deleteAccount();
     await signOut({ redirect: false });
@@ -109,7 +110,7 @@ export default function SettingsPageClient({ user }: Props) {
           <span className="gradient-text">Pengaturan</span> Akun
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Reveal className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Sidebar nav */}
           <div className="md:col-span-1">
             <div className="glass rounded-2xl border border-border/20 p-2">
@@ -301,19 +302,27 @@ export default function SettingsPageClient({ user }: Props) {
                   <p className="text-xs text-muted-foreground mb-3">
                     Menghapus akun bersifat permanen dan tidak dapat dibatalkan.
                   </p>
-                  <Button
-                    variant="ghost"
-                    onClick={handleDeleteAccount}
-                    disabled={deleting}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/20"
-                  >
-                    {deleting ? "Menghapus..." : "Hapus Akun"}
-                  </Button>
+                  <ConfirmDialog
+                    trigger={
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        disabled={deleting}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-400/10 border border-red-400/20"
+                      >
+                        {deleting ? "Menghapus..." : "Hapus Akun"}
+                      </Button>
+                    }
+                    title="Hapus Akun Secara Permanen"
+                    description="Yakin ingin menghapus akun? Tindakan ini permanen dan tidak dapat dibatalkan — semua data membership, riwayat pesanan, dan booking akan hilang."
+                    confirmLabel="Ya, Hapus Akun"
+                    onConfirm={handleDeleteAccount}
+                  />
                 </div>
               </div>
             )}
           </div>
-        </div>
+        </Reveal>
       </div>
     </div>
   );

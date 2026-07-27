@@ -26,6 +26,14 @@ export const CATEGORY_EMOJI: Record<string, string> = {
   EVENTS: "🎉",
 };
 
+export const CATEGORY_LABELS: Record<string, string> = {
+  NEWS: "Berita",
+  TIPS: "Tips",
+  NUTRITION: "Nutrisi",
+  WORKOUT: "Latihan",
+  EVENTS: "Acara",
+};
+
 export interface BlogPostData {
   id: string;
   title: string;
@@ -52,7 +60,7 @@ const BlogPostCard = ({
   showFeaturedBadge = false,
   className,
 }: BlogPostCardProps) => {
-  const formattedDate = new Date(post.publishedAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(post.publishedAt).toLocaleDateString("id-ID", {
     month: "short",
     day: "numeric",
     year: variant === "featured" ? "numeric" : undefined,
@@ -75,7 +83,7 @@ const BlogPostCard = ({
           </span>
           {showFeaturedBadge && (
             <div className="absolute top-4 left-4 bg-primary/90 text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full">
-              Featured
+              Unggulan
             </div>
           )}
         </div>
@@ -85,10 +93,10 @@ const BlogPostCard = ({
             <span
               className={`text-xs font-bold px-2.5 py-1 rounded-full border ${CATEGORY_STYLES[post.category]}`}
             >
-              {post.category}
+              {CATEGORY_LABELS[post.category] ?? post.category}
             </span>
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock size={11} /> {post.readTime} min read
+              <Clock size={11} /> {post.readTime} menit baca
             </span>
           </div>
           <h2 className="text-2xl lg:text-3xl font-black mb-4 group-hover:text-primary transition-colors duration-300">
@@ -97,10 +105,10 @@ const BlogPostCard = ({
           <p className="text-muted-foreground mb-6 leading-relaxed">{post.excerpt}</p>
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              By <strong className="text-foreground">{post.author}</strong>
+              Oleh <strong className="text-foreground">{post.author}</strong>
             </div>
             <div className="flex items-center gap-2 text-sm text-primary font-semibold group-hover:gap-3 transition-all duration-300">
-              Read Article <ArrowRight size={16} />
+              Baca Artikel <ArrowRight size={16} />
             </div>
           </div>
         </div>
@@ -124,7 +132,7 @@ const BlogPostCard = ({
         </span>
         {showFeaturedBadge && post.featured && (
           <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full">
-            Featured
+            Unggulan
           </div>
         )}
       </div>
@@ -134,10 +142,10 @@ const BlogPostCard = ({
           <span
             className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${CATEGORY_STYLES[post.category]} flex items-center gap-1`}
           >
-            <Tag size={9} /> {post.category}
+            <Tag size={9} /> {CATEGORY_LABELS[post.category] ?? post.category}
           </span>
           <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-            <Clock size={9} /> {post.readTime} min
+            <Clock size={9} /> {post.readTime} menit
           </span>
         </div>
 

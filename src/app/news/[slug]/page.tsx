@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import { toBlogPostData } from "@/lib/serializers";
 import { buildMetadata, SITE_URL } from "@/lib/seo";
-import BlogPostCard, { CATEGORY_EMOJI, CATEGORY_STYLES } from "@/components/molecules/BlogPostCard";
+import BlogPostCard, { CATEGORY_EMOJI, CATEGORY_STYLES, CATEGORY_LABELS } from "@/components/molecules/BlogPostCard";
+import Reveal from "@/components/atoms/Reveal";
 
 const getPost = cache((slug: string) => prisma.blogPost.findUnique({ where: { slug } }));
 
@@ -98,18 +99,18 @@ export default async function NewsDetailPage({
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
             <Link href="/news" className="hover:text-primary transition-colors flex items-center gap-1">
-              <ArrowLeft size={14} /> Kembali ke News
+              <ArrowLeft size={14} /> Kembali ke Berita
             </Link>
             <ChevronRight size={12} className="text-border" />
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${CATEGORY_STYLES[post.category]}`}>
-              {CATEGORY_EMOJI[post.category]} {post.category}
+              {CATEGORY_EMOJI[post.category]} {CATEGORY_LABELS[post.category] ?? post.category}
             </span>
           </div>
 
           {/* Category badge */}
           <div className="mb-5">
             <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border ${CATEGORY_STYLES[post.category]}`}>
-              <Tag size={10} /> {post.category}
+              <Tag size={10} /> {CATEGORY_LABELS[post.category] ?? post.category}
             </span>
           </div>
 
@@ -146,7 +147,7 @@ export default async function NewsDetailPage({
       </section>
 
       {/* ── ARTICLE BODY ───────────────────────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-6 py-12">
+      <Reveal><section className="max-w-4xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12">
           {/* Main content */}
           <article>
@@ -185,7 +186,7 @@ export default async function NewsDetailPage({
             {/* Share / actions */}
             <div className="flex flex-wrap items-center gap-3 pt-8 border-t border-border/20 mt-10">
               <span className="text-xs text-muted-foreground font-semibold uppercase tracking-widest">Bagikan artikel ini</span>
-              {["WhatsApp", "Instagram", "Copy Link"].map((platform) => (
+              {["WhatsApp", "Instagram", "Salin Link"].map((platform) => (
                 <button
                   key={platform}
                   className="text-xs font-semibold px-3 py-1.5 rounded-full border border-border/30 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all duration-200 cursor-pointer"
@@ -204,7 +205,7 @@ export default async function NewsDetailPage({
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-black text-base">{post.author}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${CATEGORY_STYLES[post.category]}`}>
-                    {post.category}
+                    {CATEGORY_LABELS[post.category] ?? post.category}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -236,7 +237,7 @@ export default async function NewsDetailPage({
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground flex items-center gap-1.5"><Tag size={11} /> Kategori</span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${CATEGORY_STYLES[post.category]}`}>
-                      {post.category}
+                      {CATEGORY_LABELS[post.category] ?? post.category}
                     </span>
                   </div>
                 </div>
@@ -256,11 +257,11 @@ export default async function NewsDetailPage({
             </div>
           </aside>
         </div>
-      </section>
+      </section></Reveal>
 
       {/* ── RELATED ARTICLES ───────────────────────────────────────────────────── */}
       {allRelated.length > 0 && (
-        <section className="max-w-7xl mx-auto px-6 py-12 border-t border-border/20">
+        <Reveal><section className="max-w-7xl mx-auto px-6 py-12 border-t border-border/20">
           <div className="flex items-center justify-between mb-8">
             <div>
               <span className="text-xs font-bold tracking-widest uppercase text-primary mb-2 block">Baca Juga</span>
@@ -276,17 +277,17 @@ export default async function NewsDetailPage({
               <BlogPostCard key={p.id} post={p} />
             ))}
           </div>
-        </section>
+        </section></Reveal>
       )}
 
       {/* ── BOTTOM CTA ─────────────────────────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-6 py-10">
+      <Reveal><section className="max-w-4xl mx-auto px-6 py-10">
         <div className="relative glass rounded-2xl border border-primary/20 p-8 text-center overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5" />
           <div className="relative z-10">
             <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">S-One Gym</p>
             <h3 className="text-xl font-black mb-3">Siap Mulai Perjalanan Fitnesmu?</h3>
-            <p className="text-sm text-muted-foreground mb-6">Bergabunglah bersama 2,000+ member aktif di Bukittinggi.</p>
+            <p className="text-sm text-muted-foreground mb-6">Bergabunglah bersama 2.000+ member aktif di Bukittinggi.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" asChild>
                 <Link href="/membership">Lihat Paket Membership <ArrowRight size={14} /></Link>
@@ -297,7 +298,7 @@ export default async function NewsDetailPage({
             </div>
           </div>
         </div>
-      </section>
+      </section></Reveal>
     </div>
   );
 }

@@ -14,6 +14,7 @@ declare global {
       pay: (
         token: string,
         callbacks: {
+          language?: "id" | "en";
           onSuccess?: (result: unknown) => void;
           onPending?: (result: unknown) => void;
           onError?: (result: unknown) => void;
@@ -59,6 +60,7 @@ export default function MidtransPayButton({
       if (!window.snap) throw new Error("Midtrans belum siap dimuat, coba lagi sesaat.");
 
       window.snap.pay(snapToken, {
+        language: "id",
         onSuccess: () => router.push(`/payment/processing?intentId=${intentId}`),
         onPending: () => router.push(`/payment/processing?intentId=${intentId}`),
         onError: () => {

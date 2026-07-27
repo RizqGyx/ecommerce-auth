@@ -13,10 +13,10 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { icon: UserPlus, step: "01", title: "Create Account", description: "Register online or visit us. Choose the membership plan that matches your goals and lifestyle.", iconColor: "text-primary", iconBg: "bg-primary/10", border: "border-primary/30" },
-  { icon: CreditCard, step: "02", title: "Get Your Member Card", description: "Receive your digital membership card with a unique QR code — your key to the entire S-One facility.", iconColor: "text-accent", iconBg: "bg-accent/10", border: "border-accent/30" },
-  { icon: ScanLine, step: "03", title: "Scan & Access", description: "Tap your phone at the entrance. Our system instantly verifies your membership and logs your visit.", iconColor: "text-green-400", iconBg: "bg-green-400/10", border: "border-green-400/30" },
-  { icon: Dumbbell, step: "04", title: "Train & Transform", description: "Access all equipment, join group classes, book personal training, and track your progress.", iconColor: "text-yellow-400", iconBg: "bg-yellow-400/10", border: "border-yellow-400/30" },
+  { icon: UserPlus, step: "01", title: "Buat Akun", description: "Daftar online atau datang langsung. Pilih paket membership yang sesuai dengan tujuan dan gaya hidupmu.", iconColor: "text-primary", iconBg: "bg-primary/10", border: "border-primary/30" },
+  { icon: CreditCard, step: "02", title: "Dapatkan Kartu Member", description: "Terima kartu membership digital dengan QR code unik — kunci aksesmu ke seluruh fasilitas S-One.", iconColor: "text-accent", iconBg: "bg-accent/10", border: "border-accent/30" },
+  { icon: ScanLine, step: "03", title: "Scan & Masuk", description: "Tempelkan ponselmu di gerbang masuk. Sistem kami langsung memverifikasi membershipmu dan mencatat kunjunganmu.", iconColor: "text-green-400", iconBg: "bg-green-400/10", border: "border-green-400/30" },
+  { icon: Dumbbell, step: "04", title: "Latihan & Transformasi", description: "Akses semua alat, ikuti kelas grup, booking personal training, dan pantau progresmu.", iconColor: "text-yellow-400", iconBg: "bg-yellow-400/10", border: "border-yellow-400/30" },
 ];
 
 const HowItWorksSection = () => {
@@ -26,9 +26,9 @@ const HowItWorksSection = () => {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <SectionHeader
-          badge="Getting Started"
-          title={<>How It <span className="gradient-text">Works</span></>}
-          subtitle="From sign-up to your first session in four simple steps. No complicated contracts, no hidden fees."
+          badge="Cara Memulai"
+          title={<>Cara <span className="gradient-text">Kerjanya</span></>}
+          subtitle="Dari daftar hingga sesi pertamamu dalam empat langkah sederhana. Tanpa kontrak rumit, tanpa biaya tersembunyi."
           className="mb-16"
         />
 

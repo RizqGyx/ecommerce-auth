@@ -163,8 +163,14 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    background-color: var(--background);
+    overflow-x: hidden;
+  }
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 }
 
@@ -181,6 +187,31 @@
 @keyframes count-up {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes burst-out {
+  0% { transform: translate(0, 0) scale(0.4) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--burst-x), var(--burst-y)) scale(1) rotate(var(--burst-r)); opacity: 0; }
+}
+
+@keyframes success-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @layer utilities {
@@ -204,6 +235,72 @@
   }
   .animate-count-up {
     animation: count-up 0.6s ease-out forwards;
+  }
+
+  /* Scroll-reveal — paired with the <Reveal> component. Elements start hidden
+     and animate in once they cross the viewport; staggered via --reveal-delay. */
+  .reveal {
+    opacity: 0;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-duration: 0.7s;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal.is-visible {
+    animation-name: reveal-up;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal.is-visible {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
+  /* Loading skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--muted) 25%,
+      color-mix(in srgb, var(--muted) 60%, white 10%) 50%,
+      var(--muted) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton {
+      animation: none;
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
+
+  .animate-burst {
+    animation: burst-out 900ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  }
+  .animate-success-pop {
+    animation: success-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-burst {
+      display: none;
+    }
+    .animate-success-pop {
+      animation: none;
+    }
+  }
+
+  /* Hide scrollbar while keeping the element scrollable — used by horizontal
+     shelves, filter pill rows, and category tab bars. */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
   /* Glass Effect */

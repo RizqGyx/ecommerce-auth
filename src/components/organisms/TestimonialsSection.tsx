@@ -1,4 +1,5 @@
-import { Star, Quote } from "lucide-react";
+import Link from "next/link";
+import { Star, Quote, ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { toTestimonial, deriveRoleLabel } from "@/lib/serializers";
 
@@ -28,15 +29,17 @@ const TestimonialsSection = async () => {
   return (
     <section className="relative py-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/20 to-background" />
+      <div className="absolute top-1/4 -left-24 w-80 h-80 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 -right-24 w-96 h-96 bg-accent/8 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10 mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <span className="text-xs font-bold tracking-widest uppercase text-primary mb-3 block">
-              Member Stories
+              Cerita Member
             </span>
             <h2 className="text-4xl lg:text-5xl font-black">
-              Real People, <span className="gradient-text">Real Results</span>
+              Orang Nyata, <span className="gradient-text">Hasil Nyata</span>
             </h2>
           </div>
           <div className="flex items-center gap-2 glass px-4 py-2 rounded-full border border-border/20">
@@ -49,6 +52,12 @@ const TestimonialsSection = async () => {
             <span className="text-xs text-muted-foreground">dari {totalCount} ulasan</span>
           </div>
         </div>
+        <Link
+          href="/testimonials"
+          className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 font-semibold transition-colors mt-4"
+        >
+          Lihat semua testimoni <ArrowRight size={14} />
+        </Link>
       </div>
 
       {/* Marquee strip */}

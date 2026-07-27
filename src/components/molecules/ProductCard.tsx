@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { ShoppingCart, Star, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ export interface ProductData {
   rating: number;
   reviews: number;
   badge?: string | null;
+  imageUrl?: string | null;
 }
 
 interface ProductCardProps {
@@ -31,11 +33,11 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, onAddToCart, className }: ProductCardProps) => {
   const badgeColor =
-    product.badge === "Best Seller"
+    product.badge === "Terlaris"
       ? "bg-yellow-400/90 text-black"
-      : product.badge === "Sale"
+      : product.badge === "Diskon"
       ? "bg-red-500/90 text-white"
-      : product.badge === "New"
+      : product.badge === "Baru"
       ? "bg-primary/90 text-primary-foreground"
       : "bg-accent/90 text-accent-foreground";
 
@@ -47,11 +49,24 @@ const ProductCard = ({ product, onAddToCart, className }: ProductCardProps) => {
       )}
     >
       <div className="relative h-44 bg-gradient-to-br from-secondary to-muted flex items-center justify-center overflow-hidden">
-        <span className="text-6xl opacity-30 select-none group-hover:scale-110 transition-transform duration-300">
-          {PRODUCT_ICONS[product.category]}
-        </span>
+        {product.imageUrl ? (
+          <>
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, 300px"
+              className="object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
+          </>
+        ) : (
+          <span className="text-6xl opacity-30 select-none group-hover:scale-110 transition-transform duration-300">
+            {PRODUCT_ICONS[product.category]}
+          </span>
+        )}
         {product.badge && (
-          <div className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
+          <div className={`absolute top-2 left-2 z-10 text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
             {product.badge}
           </div>
         )}
@@ -97,7 +112,7 @@ const ProductCard = ({ product, onAddToCart, className }: ProductCardProps) => {
           </div>
           <Button variant="hero" size="sm" className="text-xs px-3" onClick={onAddToCart}>
             <ShoppingCart size={13} />
-            Add
+            Tambah
           </Button>
         </div>
       </div>

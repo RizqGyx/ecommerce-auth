@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Clock, CheckCircle, Calendar, ChevronRight, Zap, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ClassType } from "@/generated/prisma";
+import Reveal from "@/components/atoms/Reveal";
+import AnimatedCounter from "@/components/atoms/motion/AnimatedCounter";
 
 const WHY_ITEMS = [
   { icon: Award, title: "Instruktur Bersertifikat", desc: "Coach kami memegang sertifikasi nasional & internasional dengan pengalaman kompetitif nyata.", color: "text-yellow-400", bg: "bg-yellow-400/10 border-yellow-400/20" },
@@ -33,7 +36,7 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
               <span className="gradient-text">yang Tepat Untukmu</span>
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-xl">
-              Enam program fitness yang dirancang oleh coach bersertifikat. Setiap kelas punya tujuan,
+              Lima program fitness yang dirancang oleh coach bersertifikat. Setiap kelas punya tujuan,
               metode, dan komunitas sendiri — pilih yang paling sesuai dengan tujuanmu.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -54,10 +57,10 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
               { value: `${classTypes.length}`, label: "Program Kelas" },
               { value: "20+", label: "Coach Bersertifikat" },
               { value: "7", label: "Hari per Minggu" },
-              { value: "2,000+", label: "Member Aktif" },
+              { value: "2.000+", label: "Member Aktif" },
             ].map((s) => (
               <div key={s.label}>
-                <div className="text-3xl font-black gradient-text">{s.value}</div>
+                <AnimatedCounter value={s.value} className="text-3xl font-black gradient-text block" />
                 <div className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{s.label}</div>
               </div>
             ))}
@@ -66,7 +69,7 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
       </section>
 
       {/* ── WHY OUR CLASSES ──────────────────────────────────────────────────────── */}
-      <section className="py-20 relative overflow-hidden">
+      <Reveal><section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/10 to-transparent" />
         <div className="absolute top-1/3 right-0 w-96 h-96 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
 
@@ -84,7 +87,7 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
                   didukung coach bersertifikat dan komunitas yang saling mendukung.
                 </p>
                 <div className="inline-flex items-center gap-4 glass rounded-2xl border border-primary/20 px-6 py-5">
-                  <div className="text-4xl font-black gradient-text">98%</div>
+                  <AnimatedCounter value="98%" className="text-4xl font-black gradient-text" />
                   <div className="text-xs text-muted-foreground leading-tight max-w-32">
                     Member melaporkan hasil nyata dalam 30 hari pertama
                   </div>
@@ -117,79 +120,88 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
             </div>
           </div>
         </div>
-      </section>
+      </section></Reveal>
 
-      {/* ── CLASS LIST ───────────────────────────────────────────────────────────── */}
+      {/* ── PROGRAM SHOWCASE — editorial alternating spread, not a card grid ──────── */}
       <section className="py-16 max-w-7xl mx-auto px-6">
-        {/* Section header */}
-        <div className="mb-10">
-          <span className="text-xs font-bold tracking-widest uppercase text-primary mb-2 block">Pilih Kelasmu</span>
-          <h2 className="text-3xl font-black">
-            Semua <span className="gradient-text">Program</span>
-          </h2>
-        </div>
+        <Reveal>
+          <div className="mb-16">
+            <span className="text-xs font-bold tracking-widest uppercase text-primary mb-2 block">Pilih Kelasmu</span>
+            <h2 className="text-3xl font-black">
+              Semua <span className="gradient-text">Program</span>
+            </h2>
+          </div>
+        </Reveal>
 
-        {/* Card grid — clean 3 col, NOT bento */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {classTypes.map((cls) => (
-            <Link
-              key={cls.id}
-              href={`/classes/${cls.id}`}
-              className="group block relative rounded-2xl overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_8px_40px_hsl(195_100%_50%/0.2)] cursor-pointer"
-            >
-              {/* Top gradient strip */}
-              <div className={`h-1 w-full bg-gradient-to-r ${cls.color}`} />
-
-              {/* Card body */}
-              <div className="bg-card/80 p-6">
-                {/* Header row: icon + badges */}
-                <div className="flex items-start justify-between mb-5">
-                  <div className={`relative w-16 h-16 rounded-xl bg-gradient-to-br ${cls.color} flex items-center justify-center text-3xl shadow-lg`}>
-                    {cls.icon}
-                    <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${cls.color} opacity-30 blur-md -z-10`} />
-                  </div>
-                  <div className="flex flex-col items-end gap-1.5">
-                    <span className="flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary/60 px-2.5 py-1 rounded-full border border-border/30">
-                      <Clock size={9} /> {cls.duration} min
+        <div className="space-y-6">
+          {classTypes.map((cls, i) => {
+            const isReversed = i % 2 === 1;
+            return (
+              <Reveal key={cls.id} index={i} staggerMs={80}>
+                <Link
+                  href={`/classes/${cls.id}`}
+                  className={`group flex flex-col ${isReversed ? "md:flex-row-reverse" : "md:flex-row"} rounded-3xl overflow-hidden border border-white/10 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_20px_60px_hsl(195_100%_50%/0.12)]`}
+                >
+                  {/* Photo panel — real photo, class identity */}
+                  <div className="relative md:w-2/5 min-h-56 md:min-h-72 flex items-center justify-center overflow-hidden shrink-0">
+                    <Image
+                      src={`/classes/${cls.slug}.jpg`}
+                      alt={cls.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cls.color} opacity-35 mix-blend-overlay`} />
+                    <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors duration-500" />
+                    <div className="absolute inset-0 hologram-lines opacity-15" />
+                    <span className="relative text-[5rem] md:text-[6rem] leading-none select-none drop-shadow-[0_0_40px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-500">
+                      {cls.icon}
+                    </span>
+                    {/* Giant faint index number */}
+                    <span className="absolute bottom-2 right-4 text-8xl font-black text-white/10 select-none leading-none">
+                      {String(i + 1).padStart(2, "0")}
                     </span>
                   </div>
-                </div>
 
-                {/* Name + description */}
-                <h3 className="text-xl font-black mb-2 group-hover:text-primary transition-colors duration-300">
-                  {cls.name}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-5 line-clamp-2">
-                  {cls.description}
-                </p>
+                  {/* Content panel */}
+                  <div className="flex-1 bg-card/60 p-8 md:p-10 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="flex items-center gap-1 text-[10px] text-muted-foreground bg-secondary/60 px-2.5 py-1 rounded-full border border-border/30">
+                        <Clock size={9} /> {cls.duration} menit
+                      </span>
+                    </div>
 
-                {/* Benefits preview */}
-                {cls.benefits && (
-                  <ul className="space-y-1.5 mb-6">
-                    {cls.benefits.slice(0, 2).map((b) => (
-                      <li key={b} className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle size={12} className="text-primary shrink-0" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                    <h3 className="text-3xl md:text-4xl font-black mb-3 group-hover:text-primary transition-colors duration-300">
+                      {cls.name}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed mb-6 max-w-lg">
+                      {cls.description}
+                    </p>
 
-                {/* CTA — always visible, high contrast */}
-                <div className="flex items-center justify-between pt-4 border-t border-border/20">
-                  <span className="text-xs text-muted-foreground">Klik untuk detail & jadwal</span>
-                  <div className="flex items-center gap-1.5 text-sm font-bold text-primary group-hover:gap-2.5 transition-all duration-300">
-                    Lihat Detail <ChevronRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+                    {cls.benefits && cls.benefits.length > 0 && (
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8 max-w-lg">
+                        {cls.benefits.slice(0, 4).map((b) => (
+                          <li key={b} className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <CheckCircle size={13} className="text-primary shrink-0" />
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <div className="flex items-center gap-1.5 text-sm font-bold text-primary group-hover:gap-3 transition-all duration-300">
+                      Lihat Detail & Jadwal <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                    </div>
                   </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+                </Link>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 
       {/* ── CLOSING CTA ──────────────────────────────────────────────────────────── */}
-      <section className="py-24 max-w-7xl mx-auto px-6">
+      <Reveal><section className="py-24 max-w-7xl mx-auto px-6">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/15 via-accent/8 to-primary/5 border border-primary/25 p-10 lg:p-16 text-center">
           <div className="absolute inset-0 hologram-lines opacity-10" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
@@ -212,7 +224,7 @@ export default function ClassesPageClient({ classTypes }: { classTypes: ClassTyp
             </div>
           </div>
         </div>
-      </section>
+      </section></Reveal>
     </div>
   );
 }

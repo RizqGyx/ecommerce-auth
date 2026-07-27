@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle, Calendar, Clock, Users, ArrowRight, CalendarPlus } from "lucide-react";
+import { Calendar, Clock, Users, ArrowRight, CalendarPlus, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import CelebrationBurst from "@/components/atoms/CelebrationBurst";
 
 export default async function BookingSuccessPage({
   searchParams,
@@ -27,15 +28,16 @@ export default async function BookingSuccessPage({
   return (
     <div className="min-h-screen pt-20 flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center">
-        {/* Success icon */}
+        {/* Success icon — your spot on the calendar is locked in */}
         <div className="relative mb-6 inline-block">
-          <div className="w-24 h-24 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center mx-auto">
-            <CheckCircle size={48} className="text-primary" />
+          <CelebrationBurst colors={["#00b8ff", "#7c3aed", "#00b8ff"]} />
+          <div className="relative w-24 h-24 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center mx-auto animate-success-pop">
+            <CalendarCheck size={44} className="text-primary" />
           </div>
           <div className="absolute inset-0 rounded-full animate-ping bg-primary/5" />
         </div>
 
-        <h1 className="text-3xl font-black mb-2">Booking Berhasil! 🎉</h1>
+        <h1 className="text-3xl font-black mb-2">Slotmu Sudah Aman! 🎉</h1>
         <p className="text-muted-foreground mb-8">
           Tempatmu di kelas <strong className="text-foreground">{classSession.classType.name}</strong> telah dikonfirmasi.
           Datanglah 10 menit lebih awal!

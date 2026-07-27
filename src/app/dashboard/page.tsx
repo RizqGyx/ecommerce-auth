@@ -16,6 +16,7 @@ import UpcomingClassesWidget from "@/components/organisms/UpcomingClassesWidget"
 import PTRegistrationWidget from "@/components/organisms/PTRegistrationWidget";
 import RecentTransactionsWidget from "@/components/organisms/RecentTransactionsWidget";
 import UnreviewedClassesWidget from "@/components/organisms/UnreviewedClassesWidget";
+import Reveal from "@/components/atoms/Reveal";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -81,7 +82,7 @@ export default async function DashboardPage() {
   const upcomingClasses = upcomingRegistrations.map((r) => ({
     class: r.session.classType.name,
     coach: r.session.coach.name,
-    date: r.session.date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
+    date: r.session.date.toLocaleDateString("id-ID", { weekday: "short", month: "short", day: "numeric" }),
     time: r.session.startTime,
     room: r.session.room ?? "",
     color: r.session.classType.color ?? "from-primary to-accent",
@@ -93,22 +94,35 @@ export default async function DashboardPage() {
     : 0;
 
   const STATS = [
-    { label: "Classes Attended", value: attendedCount, icon: Users, color: "text-accent" },
-    { label: "Days Left", value: membership ? daysLeft : "-", icon: Clock, color: "text-green-400" },
-    { label: "Upcoming Classes", value: upcomingRegistrations.length, icon: Dumbbell, color: "text-primary" },
+    { label: "Kelas Diikuti", value: attendedCount, icon: Users, color: "text-accent" },
+    { label: "Sisa Hari", value: membership ? daysLeft : "-", icon: Clock, color: "text-green-400" },
+    { label: "Kelas Mendatang", value: upcomingRegistrations.length, icon: Dumbbell, color: "text-primary" },
   ];
 
   const memberId = memberCard ? `S1G-${memberCard.barcodeCode.slice(-8).toUpperCase()}` : "";
 
+  const planLabel = membership?.plan.name;
+
   return (
     <div className="min-h-screen pt-20 pb-16">
-      {/* Top bar */}
-      <div className="border-b border-border/20 bg-card/30">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      {/* Top bar — hero strip, matches the rest of the site's ambient identity */}
+      <div className="relative overflow-hidden border-b border-border/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/5 to-transparent" />
+        <div className="absolute inset-0 hologram-lines opacity-[0.06]" />
+        <div className="absolute -top-24 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-6 py-7 flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-lg font-bold">
-              Welcome back, <span className="gradient-text">{(session.user.name ?? "Member").split(" ")[0]}</span> 👋
-            </h1>
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <h1 className="text-2xl lg:text-3xl font-black leading-none">
+                Selamat datang kembali, <span className="gradient-text">{(session.user.name ?? "Member").split(" ")[0]}</span> 👋
+              </h1>
+              {planLabel && (
+                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider">
+                  {planLabel} Member
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">{session.user.email}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -116,7 +130,7 @@ export default async function DashboardPage() {
               <Settings size={18} />
             </Link>
             <Button variant="neon" size="sm" asChild>
-              <Link href="/schedule">Book Class</Link>
+              <Link href="/schedule">Book Kelas</Link>
             </Button>
           </div>
         </div>
@@ -125,7 +139,7 @@ export default async function DashboardPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT column */}
-          <div className="lg:col-span-1 space-y-6">
+          <Reveal className="lg:col-span-1 space-y-6" delay={0}>
             {membership && memberCard ? (
               <>
                 <MembershipCardDisplay
@@ -134,7 +148,7 @@ export default async function DashboardPage() {
                     memberId,
                     plan: membership.plan.name,
                     planColor: membership.plan.color ?? "from-primary to-accent",
-                    validUntil: membership.endDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+                    validUntil: membership.endDate.toLocaleDateString("id-ID", { month: "long", day: "numeric", year: "numeric" }),
                   }}
                 />
 
@@ -142,8 +156,8 @@ export default async function DashboardPage() {
                 <div className="glass rounded-2xl border border-border/20 p-5">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="font-bold">Gym Entry QR</h3>
-                      <p className="text-xs text-muted-foreground">Scan at entrance gate</p>
+                      <h3 className="font-bold">QR Masuk Gym</h3>
+                      <p className="text-xs text-muted-foreground">Scan di gerbang masuk</p>
                     </div>
                     <QrCode size={20} className="text-primary" />
                   </div>
@@ -158,7 +172,7 @@ export default async function DashboardPage() {
                 {/* Barcode */}
                 <div className="glass rounded-2xl border border-border/20 p-5">
                   <h3 className="font-bold text-sm mb-1">Barcode</h3>
-                  <p className="text-xs text-muted-foreground mb-3">Alternative entry method</p>
+                  <p className="text-xs text-muted-foreground mb-3">Metode masuk alternatif</p>
                   <BarcodeVisual value={memberCard.barcodeCode} label={memberId} />
                 </div>
               </>
@@ -173,33 +187,38 @@ export default async function DashboardPage() {
                 </Button>
               </div>
             )}
-          </div>
+          </Reveal>
 
           {/* RIGHT column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
+            <Reveal index={1} staggerMs={70} className="grid grid-cols-3 gap-4">
               {STATS.map((s) => <DashboardStatCard key={s.label} {...s} />)}
-            </div>
+            </Reveal>
 
             {membership && (
-              <MembershipStatusWidget
-                plan={membership.plan.name}
-                memberSince={membership.startDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-                validUntil={membership.endDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-                daysLeft={daysLeft}
-              />
+              <Reveal index={2} staggerMs={70}>
+                <MembershipStatusWidget
+                  plan={membership.plan.name}
+                  memberSince={membership.startDate.toLocaleDateString("id-ID", { month: "long", year: "numeric" })}
+                  validUntil={membership.endDate.toLocaleDateString("id-ID", { month: "long", day: "numeric", year: "numeric" })}
+                  daysLeft={daysLeft}
+                />
+              </Reveal>
             )}
 
-            <ActivityGraph />
+            <Reveal index={3} staggerMs={70}><ActivityGraph /></Reveal>
 
-            <RecentTransactionsWidget transactions={recentTransactions} />
+            {/* Bento pairing instead of a pure vertical stack */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Reveal index={4} staggerMs={70}><UpcomingClassesWidget classes={upcomingClasses} /></Reveal>
+              <Reveal index={5} staggerMs={70}><PTRegistrationWidget ptBooking={activePtBooking} /></Reveal>
+            </div>
 
-            <UpcomingClassesWidget classes={upcomingClasses} />
-
-            <UnreviewedClassesWidget registrations={unreviewedClasses} />
-
-            <PTRegistrationWidget ptBooking={activePtBooking} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Reveal index={6} staggerMs={70}><RecentTransactionsWidget transactions={recentTransactions} /></Reveal>
+              <Reveal index={7} staggerMs={70}><UnreviewedClassesWidget registrations={unreviewedClasses} /></Reveal>
+            </div>
           </div>
         </div>
       </div>

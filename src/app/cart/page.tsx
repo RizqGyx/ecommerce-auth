@@ -5,6 +5,7 @@ import { ShoppingCart, ArrowRight, ShoppingBag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import CartItemCard from "@/components/molecules/CartItemCard";
+import Reveal from "@/components/atoms/Reveal";
 
 const SHIPPING_ESTIMATE = 15000;
 
@@ -47,7 +48,7 @@ export default function CartPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Reveal className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Items list */}
           <div className="lg:col-span-2 space-y-3">
             {items.map((item) => (
@@ -106,7 +107,7 @@ export default function CartPage() {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </div>
   );

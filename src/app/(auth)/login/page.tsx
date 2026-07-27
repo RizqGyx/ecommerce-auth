@@ -20,7 +20,7 @@ const SOCIAL_PROOF = (
       ))}
     </div>
     <div className="text-sm text-muted-foreground">
-      <strong className="text-foreground">2,000+</strong> members training today
+      <strong className="text-foreground">2.000+</strong> member sedang latihan hari ini
     </div>
   </div>
 );
@@ -56,9 +56,9 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex">
       <AuthBrandingPanel
-        heading={<>Welcome <br /><span className="gradient-text">Back.</span></>}
-        subheading="Your body is waiting. Let's get back to work."
-        features={["QR code gym access", "Book classes instantly", "Track your progress", "Shop supplements & gear"]}
+        heading={<>Selamat <br /><span className="gradient-text">Datang Kembali.</span></>}
+        subheading="Tubuhmu sudah menunggu. Ayo lanjutkan latihan."
+        features={["Akses gym dengan QR code", "Booking kelas instan", "Pantau progresmu", "Belanja suplemen & alat"]}
         extra={SOCIAL_PROOF}
       />
 
@@ -77,10 +77,10 @@ function LoginForm() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-3xl font-black mb-2">Sign In</h2>
+            <h2 className="text-3xl font-black mb-2">Masuk</h2>
             <p className="text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-primary hover:text-primary/80 transition-colors font-semibold">Create one</Link>
+              Belum punya akun?{" "}
+              <Link href="/register" className="text-primary hover:text-primary/80 transition-colors font-semibold">Buat akun</Link>
             </p>
           </div>
 
@@ -102,7 +102,7 @@ function LoginForm() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-sm font-medium">Password</label>
-                <Link href="#" className="text-xs text-primary hover:text-primary/80 transition-colors">Forgot password?</Link>
+                <Link href="#" className="text-xs text-primary hover:text-primary/80 transition-colors">Lupa password?</Link>
               </div>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -116,28 +116,28 @@ function LoginForm() {
 
             <div className="flex items-center gap-2">
               <input type="checkbox" id="remember" className="w-4 h-4 rounded accent-primary" />
-              <label htmlFor="remember" className="text-sm text-muted-foreground">Remember me for 30 days</label>
+              <label htmlFor="remember" className="text-sm text-muted-foreground">Ingat saya selama 30 hari</label>
             </div>
 
             <Button type="submit" variant="hero" className="w-full py-3 h-auto text-base" disabled={isLoading}>
               {isLoading
-                ? <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />Signing in...</div>
-                : <><Zap size={18} /> Sign In</>}
+                ? <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />Sedang masuk...</div>
+                : <><Zap size={18} /> Masuk</>}
             </Button>
 
             <div className="flex items-center gap-3 my-2">
               <div className="flex-1 h-px bg-border/30" />
-              <span className="text-xs text-muted-foreground">or continue with</span>
+              <span className="text-xs text-muted-foreground">atau lanjutkan dengan</span>
               <div className="flex-1 h-px bg-border/30" />
             </div>
 
-            <GoogleButton label="Continue with Google" callbackUrl={callbackUrl ?? "/dashboard"} />
+            <GoogleButton label="Lanjutkan dengan Google" callbackUrl={callbackUrl ?? "/dashboard"} />
           </form>
 
           <p className="mt-8 text-center text-xs text-muted-foreground">
-            By signing in you agree to our{" "}
-            <Link href="#" className="text-primary hover:underline">Terms of Service</Link>{" "}and{" "}
-            <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>.
+            Dengan masuk kamu menyetujui{" "}
+            <Link href="#" className="text-primary hover:underline">Ketentuan Layanan</Link>{" "}dan{" "}
+            <Link href="#" className="text-primary hover:underline">Kebijakan Privasi</Link> kami.
           </p>
         </div>
       </div>

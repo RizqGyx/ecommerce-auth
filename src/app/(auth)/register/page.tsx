@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Eye, EyeOff, Zap, User, Mail, Lock, Phone } from "lucide-react";
+import { Eye, EyeOff, Zap, User, Mail, Lock, Phone, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AuthBrandingPanel from "@/components/organisms/AuthBrandingPanel";
 import GoogleButton from "@/components/atoms/GoogleButton";
@@ -47,19 +47,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex">
-      <AuthBrandingPanel
-        heading={<>Your Journey <br /><span className="gradient-text">Starts Here.</span></>}
-        subheading="Join 2,000+ members who chose to transform their bodies and minds at S-One."
-        features={[
-          "Free first week — no credit card required",
-          "QR code member card issued instantly",
-          "Access to all group classes immediately",
-          "Cancel anytime, no hassle",
-        ]}
-        featureIcon="check"
-      />
-
-      {/* Right — Form */}
+      {/* Left — Form (mirrored from Login: this is a decision page, form leads) */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 bg-background">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
@@ -71,10 +59,10 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-3xl font-black mb-2">Create Account</h2>
+            <h2 className="text-3xl font-black mb-2">Buat Akun</h2>
             <p className="text-muted-foreground">
-              Already a member?{" "}
-              <Link href="/login" className="text-primary hover:text-primary/80 font-semibold transition-colors">Sign in</Link>
+              Sudah jadi member?{" "}
+              <Link href="/login" className="text-primary hover:text-primary/80 font-semibold transition-colors">Masuk</Link>
             </p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -84,9 +72,9 @@ export default function RegisterPage() {
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium mb-1.5">Full Name</label>
+              <label className="block text-sm font-medium mb-1.5">Nama Lengkap</label>
               <div className="relative"><User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input name="name" type="text" value={form.name} onChange={handleChange} placeholder="Your full name" required className={inputClass} />
+                <input name="name" type="text" value={form.name} onChange={handleChange} placeholder="Nama lengkapmu" required className={inputClass} />
               </div>
             </div>
             <div>
@@ -96,7 +84,7 @@ export default function RegisterPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1.5">Phone / WhatsApp</label>
+              <label className="block text-sm font-medium mb-1.5">Telepon / WhatsApp</label>
               <div className="relative"><Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input name="phone" type="tel" value={form.phone} onChange={handleChange} placeholder="+62 8xx-xxxx-xxxx" required className={inputClass} />
               </div>
@@ -105,32 +93,55 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium mb-1.5">Password</label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input name="password" type={showPassword ? "text" : "password"} value={form.password} onChange={handleChange} placeholder="Min. 8 characters" required minLength={8}
+                <input name="password" type={showPassword ? "text" : "password"} value={form.password} onChange={handleChange} placeholder="Min. 8 karakter" required minLength={8}
                   className="w-full pl-9 pr-10 py-3 rounded-xl bg-card border border-border/30 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all" />
                 <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               {form.password.length > 0 && (
-                <div className="mt-1.5 flex gap-1">
-                  {[4, 6, 8].map((len) => (
-                    <div key={len} className={`flex-1 h-1 rounded-full transition-all duration-300 ${form.password.length >= len ? "bg-primary" : "bg-border/30"}`} />
+                <div className="mt-2 space-y-1">
+                  {[
+                    { label: "Minimal 8 karakter", met: form.password.length >= 8 },
+                    { label: "Mengandung huruf & angka", met: /[a-zA-Z]/.test(form.password) && /[0-9]/.test(form.password) },
+                  ].map(({ label, met }) => (
+                    <div key={label} className={`flex items-center gap-1.5 text-xs transition-colors ${met ? "text-primary" : "text-muted-foreground"}`}>
+                      <span className={`flex items-center justify-center w-3.5 h-3.5 rounded-full border transition-colors ${met ? "bg-primary border-primary" : "border-border/50"}`}>
+                        {met && <Check size={9} className="text-primary-foreground" />}
+                      </span>
+                      {label}
+                    </div>
                   ))}
                 </div>
               )}
             </div>
             <Button type="submit" variant="hero" className="w-full py-3 h-auto text-base" disabled={isLoading}>
               {isLoading
-                ? <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />Creating account...</div>
-                : <>Create Account <Zap size={16} /></>}
+                ? <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />Membuat akun...</div>
+                : <>Buat Akun <Zap size={16} /></>}
             </Button>
             <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-border/30" /><span className="text-xs text-muted-foreground">or</span><div className="flex-1 h-px bg-border/30" />
+              <div className="flex-1 h-px bg-border/30" /><span className="text-xs text-muted-foreground">atau</span><div className="flex-1 h-px bg-border/30" />
             </div>
-            <GoogleButton label="Sign up with Google" />
+            <GoogleButton label="Daftar dengan Google" />
           </form>
         </div>
       </div>
+
+      {/* Right — Branding (mirrored + more vivid: registering is a bigger decision than signing back in) */}
+      <AuthBrandingPanel
+        heading={<>Perjalananmu <br /><span className="gradient-text">Dimulai di Sini.</span></>}
+        subheading="Bergabung dengan 2.000+ member yang memilih mentransformasi tubuh dan pikiran mereka di S-One."
+        features={[
+          "Minggu pertama gratis — tanpa kartu kredit",
+          "Kartu member QR code langsung terbit",
+          "Akses semua kelas grup seketika",
+          "Batalkan kapan saja, tanpa ribet",
+        ]}
+        featureIcon="check"
+        mood="ambitious"
+        mirrored
+      />
     </div>
   );
 }

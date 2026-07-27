@@ -1,9 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Package, CreditCard } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Receipt, Wallet, Truck, PartyPopper, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+const PROGRESS_STEPS = [
+  { key: "PENDING", label: "Pesanan Dibuat", icon: Receipt },
+  { key: "PAID", label: "Dibayar", icon: Wallet },
+  { key: "SHIPPED", label: "Dikirim", icon: Truck },
+  { key: "COMPLETED", label: "Selesai", icon: PartyPopper },
+] as const;
 
 export const metadata = { robots: { index: false, follow: false } };
 
@@ -60,6 +67,51 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ or
             Dipesan {order.createdAt.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
           </div>
         </div>
+
+        {/* Order progress tracker */}
+        {order.status === "CANCELED" ? (
+          <div className="glass rounded-2xl border border-red-400/20 p-6 mb-6 flex items-center gap-3">
+            <XCircle size={22} className="text-red-400 shrink-0" />
+            <div>
+              <p className="font-bold text-sm text-red-400">Pesanan Dibatalkan</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Pesanan ini tidak dilanjutkan. Hubungi kami jika ini tidak sesuai.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="glass rounded-2xl border border-border/20 p-6 mb-6">
+            <div className="relative flex items-center justify-between">
+              <div className="absolute left-0 right-0 top-5 h-0.5 bg-border/20" />
+              <div
+                className="absolute left-0 top-5 h-0.5 bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                style={{
+                  width: `${(PROGRESS_STEPS.findIndex((s) => s.key === order.status) / (PROGRESS_STEPS.length - 1)) * 100}%`,
+                }}
+              />
+              {PROGRESS_STEPS.map((step, i) => {
+                const currentIdx = PROGRESS_STEPS.findIndex((s) => s.key === order.status);
+                const isDone = i <= currentIdx;
+                const isCurrent = i === currentIdx;
+                const Icon = step.icon;
+                return (
+                  <div key={step.key} className="relative z-10 flex flex-col items-center gap-2 flex-1">
+                    <div
+                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                        isDone
+                          ? "bg-gradient-to-br from-primary to-accent border-transparent shadow-lg shadow-primary/30"
+                          : "bg-background border-border/30"
+                      } ${isCurrent ? "scale-110" : ""}`}
+                    >
+                      <Icon size={16} className={isDone ? "text-white" : "text-muted-foreground"} />
+                    </div>
+                    <span className={`text-[10px] font-semibold text-center ${isDone ? "text-foreground" : "text-muted-foreground/60"}`}>
+                      {step.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* LEFT: Products */}

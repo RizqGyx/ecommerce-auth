@@ -33,6 +33,15 @@ interface Props {
   transactions: TransactionSummary[];
 }
 
+function groupByMonth(transactions: TransactionSummary[]): Record<string, TransactionSummary[]> {
+  const groups: Record<string, TransactionSummary[]> = {};
+  for (const tx of transactions) {
+    const label = tx.createdAt.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+    (groups[label] ??= []).push(tx);
+  }
+  return groups;
+}
+
 export default function TransactionsPageClient({ transactions }: Props) {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
 
@@ -97,48 +106,66 @@ export default function TransactionsPageClient({ transactions }: Props) {
             <p className="text-sm text-muted-foreground">Riwayat pembelian dan bookingmu akan muncul di sini.</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filtered.map((tx) => {
-              const typeMeta = TYPE_META[tx.type];
-              const TypeIcon = typeMeta.icon;
-              const statusMeta = STATUS_META[tx.status] ?? STATUS_META.PENDING;
-              const StatusIcon = statusMeta.icon;
-
-              return (
-                <Link
-                  key={`${tx.type}-${tx.id}`}
-                  href={`/transactions/${tx.id}`}
-                  className="group glass rounded-2xl border border-border/20 hover:border-primary/30 transition-all duration-300 hover:-translate-y-0.5 p-5 flex items-center gap-4"
-                >
-                  <div className="p-3 rounded-xl bg-primary/10 shrink-0">
-                    <TypeIcon size={20} className="text-primary" />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                        {typeMeta.label}
-                      </span>
-                      <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1", statusMeta.color)}>
-                        <StatusIcon size={9} /> {statusMeta.label}
-                      </span>
+          /* Chronological timeline — spans 3 different transaction types, so a
+             connected timeline reads better than a flat list of identical rows. */
+          <div className="relative">
+            <div className="absolute left-[18px] top-2 bottom-2 w-px bg-gradient-to-b from-primary/40 via-border/30 to-transparent" />
+            <div className="space-y-10">
+              {Object.entries(groupByMonth(filtered)).map(([month, txs]) => (
+                <div key={month}>
+                  <div className="relative flex items-center gap-4 mb-4">
+                    <div className="relative z-10 w-9 h-9 rounded-full bg-background border-2 border-primary/40 flex items-center justify-center shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
                     </div>
-                    <div className="text-sm font-semibold truncate">{tx.title}</div>
-                    <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                      <span>{tx.subtitle}</span>
-                      <span>·</span>
-                      <span>{tx.createdAt.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</span>
-                    </div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{month}</span>
                   </div>
 
-                  <div className="text-right shrink-0">
-                    <div className="font-bold text-sm text-primary">Rp {tx.total.toLocaleString("id-ID")}</div>
-                  </div>
+                  <div className="space-y-3 pl-[46px]">
+                    {txs.map((tx) => {
+                      const typeMeta = TYPE_META[tx.type];
+                      const TypeIcon = typeMeta.icon;
+                      const statusMeta = STATUS_META[tx.status] ?? STATUS_META.PENDING;
+                      const StatusIcon = statusMeta.icon;
 
-                  <ChevronRight size={18} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                </Link>
-              );
-            })}
+                      return (
+                        <Link
+                          key={`${tx.type}-${tx.id}`}
+                          href={`/transactions/${tx.id}`}
+                          className="group glass rounded-2xl border border-border/20 hover:border-primary/30 transition-all duration-300 hover:-translate-y-0.5 p-5 flex items-center gap-4"
+                        >
+                          <div className="p-3 rounded-xl bg-primary/10 shrink-0">
+                            <TypeIcon size={20} className="text-primary" />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                {typeMeta.label}
+                              </span>
+                              <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1", statusMeta.color)}>
+                                <StatusIcon size={9} /> {statusMeta.label}
+                              </span>
+                            </div>
+                            <div className="text-sm font-semibold truncate">{tx.title}</div>
+                            <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                              <span>{tx.subtitle}</span>
+                              <span>·</span>
+                              <span>{tx.createdAt.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</span>
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <div className="font-bold text-sm text-primary">Rp {tx.total.toLocaleString("id-ID")}</div>
+                          </div>
+
+                          <ChevronRight size={18} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

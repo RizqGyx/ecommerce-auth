@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Menu, X, ShoppingCart, User, Bell,
+  Menu, X, ShoppingCart, User, Bell, Search,
   LayoutDashboard, Settings, LogOut, ReceiptText, ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,13 +15,13 @@ import type { NotificationView } from "@/lib/serializers";
 import { getNotifications, markNotificationRead } from "@/app/notifications/actions";
 
 const NAV_ITEMS = [
-  { name: "Home", href: "/" },
-  { name: "Classes", href: "/classes" },
-  { name: "Schedule", href: "/schedule" },
+  { name: "Beranda", href: "/" },
+  { name: "Kelas", href: "/classes" },
+  { name: "Jadwal", href: "/schedule" },
   { name: "Membership", href: "/membership" },
-  { name: "Coaches", href: "/coaches" },
+  { name: "Coach", href: "/coaches" },
   { name: "Shop", href: "/shop" },
-  { name: "News", href: "/news" },
+  { name: "Berita", href: "/news" },
 ];
 
 const Header: React.FC = () => {
@@ -157,6 +157,15 @@ const Header: React.FC = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2.5">
+            {/* Search */}
+            <Link
+              href="/search"
+              className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+              aria-label="Cari"
+            >
+              <Search size={18} />
+            </Link>
+
             {/* Cart (logged in only) */}
             {isLoggedIn && (
               <Link
@@ -311,7 +320,7 @@ const Header: React.FC = () => {
 
                 <div className="hidden md:block">
                   <Button variant="hero" size="sm" className="text-xs px-4" asChild>
-                    <Link href="/register">Join Now</Link>
+                    <Link href="/register">Gabung Sekarang</Link>
                   </Button>
                 </div>
               </>
@@ -348,6 +357,13 @@ const Header: React.FC = () => {
                 </Link>
               </div>
             ))}
+            <Link
+              href="/search"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center gap-2.5 px-4 py-3 rounded-lg font-medium text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all duration-200"
+            >
+              <Search size={16} /> Cari
+            </Link>
             <div className="pt-4 border-t border-border/20 flex flex-col gap-2">
               {isLoggedIn ? (
                 <>
@@ -394,7 +410,7 @@ const Header: React.FC = () => {
                     <Link href="/register" onClick={() => setIsMenuOpen(false)}>Join Now</Link>
                   </Button>
                   <Button variant="neon" className="w-full" asChild>
-                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
+                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>Masuk</Link>
                   </Button>
                 </>
               )}
