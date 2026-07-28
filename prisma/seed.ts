@@ -40,7 +40,7 @@ async function main() {
   const hashedPassword = await hash(ADMIN_PASSWORD, 10);
   const admin = await prisma.user.upsert({
     where: { email: ADMIN_EMAIL },
-    update: { emailVerified: new Date() },
+    update: { password: hashedPassword, emailVerified: new Date(), role: "ADMIN" },
     create: {
       name: "S-One Gym Admin",
       email: ADMIN_EMAIL,

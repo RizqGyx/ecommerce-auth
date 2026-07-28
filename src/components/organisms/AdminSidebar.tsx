@@ -10,6 +10,7 @@ import {
   CreditCard,
   Newspaper,
   ClipboardCheck,
+  ScanLine,
   ArrowLeft,
   LogOut,
 } from "lucide-react";
@@ -17,6 +18,7 @@ import { signOut } from "next-auth/react";
 
 const NAV_ITEMS = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
+  { name: "Check-In Member", href: "/admin/check-in", icon: ScanLine },
   { name: "Products", href: "/admin/products", icon: ShoppingBag },
   { name: "Classes", href: "/admin/classes", icon: Dumbbell },
   { name: "Coaches", href: "/admin/coaches", icon: Users },
